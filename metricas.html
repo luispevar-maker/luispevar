@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LUISPEVAR · Métricas semanales</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--gold:#C9A84C;--gold-l:#E8C97A;--green:#4ADE80;--teal:#2DD4BF;--red:#F87171;--bg:#060b14;--bg2:#0c1525;--bg3:#111d2e;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);--txt:#EEF2FF;--txt2:#94A3B8;--txt3:#7A92AA;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%);color:var(--txt)}
+.container{max-width:480px;margin:0 auto;padding:20px 16px 40px}
+.header{text-align:center;padding:24px 0 20px}
+.header-logo{font-size:11px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:8px}
+.header-title{font-size:24px;font-weight:600;margin-bottom:4px}
+.header-sub{font-size:12px;color:var(--txt3);font-family:'DM Mono',monospace}
+.section{background:rgba(12,21,37,.9);border:1px solid var(--border);border-radius:14px;padding:18px 16px;margin-bottom:14px}
+.section-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.num-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.num-row:last-child{margin-bottom:0}
+.num-label{flex:1}
+.num-label-main{font-size:13px;color:var(--txt2)}
+.num-label-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+.num-control{display:flex;align-items:center;gap:0;flex-shrink:0}
+.num-btn{width:38px;height:38px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--txt);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:background .15s}
+.num-btn:hover{background:rgba(255,255,255,.07)}
+.num-val{min-width:60px;text-align:center;font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--gold-l);padding:0 6px}
+.metric-badge{background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--teal);line-height:1.5}
+.notes-area{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:none;min-height:80px;line-height:1.5}
+.notes-area:focus{border-color:rgba(201,168,76,.3)}
+.notes-area::placeholder{color:var(--txt3)}
+.submit-btn{width:100%;padding:16px;background:var(--gold);border:none;border-radius:12px;color:#0a0d14;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:6px}
+.submit-btn:hover{background:var(--gold-l)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.calc-panel{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:8px}
+.calc-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0}
+.calc-label{color:var(--txt3)}
+.calc-val{font-family:'DM Mono',monospace;font-weight:500}
+.success-screen{display:none;text-align:center;padding:40px 20px}
+.success-icon{font-size:48px;margin-bottom:16px}
+.success-title{font-size:20px;font-weight:600;color:var(--green);margin-bottom:8px}
+.success-msg{font-size:13px;color:var(--txt3);line-height:1.6}
+.error-msg{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:12px 14px;color:var(--red);font-size:12px;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-logo">LUISPEVAR · Guardamar del Segura</div>
+    <div class="header-title">📊 Métricas semanales</div>
+    <div class="header-sub" id="headerSub">Cargando...</div>
+  </div>
+
+  <div id="mainContent">
+
+    <div id="errorBanner"></div>
+
+    <!-- Báscula -->
+    <div class="section">
+      <div class="section-title">⚖️ Báscula</div>
+      <div class="metric-badge">Medir en ayunas, después de orinar, misma hora siempre</div>
+      <div class="num-row">
+        <div class="num-label"><div class="num-label-main">Peso corporal</div><div class="num-label-sub">kg</div></div>
+        <div class="num-control">
+          <button class="num-btn" onclick="adj('peso',-.1,40,150)">−</button>
+          <div class="num-val" id="val-peso">84.0</div>
+          <button class="num-btn" onclick="adj('peso',.1,40,150)">+</button>
+        </div>
+      </div>
+      <div class="num-row">
+        <div class="num-label"><div class="num-label-main">Grasa corporal</div><div class="num-label-sub">%</div></div>
+        <div class="num-control">
+          <button class="num-btn" onclick="adj('grasa',-.1,5,50)">−</button>
+          <div class="num-val" id="val-grasa">20.0</div>
+          <button class="num-btn" onclick="adj('grasa',.1,5,50)">+</button>
+        </div>
+      </div>
+      <div class="num-row">
+        <div class="num-label"><div class="num-label-main">Grasa visceral</div><div class="num-label-sub">nivel</div></div>
+        <div class="num-control">
+          <button class="num-btn" onclick="adj('visceral',-1,1,30)">−</button>
+          <div class="num-val" id="val-visceral">11</div>
+          <button class="num-btn" onclick="adj('visceral',1,1,30)">+</button>
+        </div>
+      </div>
+      <div class="calc-panel">
+        <div class="calc-row"><span class="calc-label">Masa magra estimada</span><span class="calc-val" id="calc-lean" style="color:var(--green)">—</span></div>
+        <div class="calc-row"><span class="calc-label">Masa grasa estimada</span><span class="calc-val" id="calc-fat-kg" style="color:var(--red)">—</span></div>
+        <div class="calc-row"><span class="calc-label">IMC</span><span class="calc-val" id="calc-imc">—</span></div>
+      </div>
+    </div>
+
+    <!-- Cintura -->
+    <div class="section">
+      <div class="section-title">📏 Cintura</div>
+      <div class="metric-badge">Cinta métrica a la altura del ombligo, sin meter tripa, al final de una espiración normal</div>
+      <div class="num-row">
+        <div class="num-label"><div class="num-label-main">Perímetro de cintura</div><div class="num-label-sub">cm</div></div>
+        <div class="num-control">
+          <button class="num-btn" onclick="adj('cintura',-.5,60,150)">−</button>
+          <div class="num-val" id="val-cintura">97.0</div>
+          <button class="num-btn" onclick="adj('cintura',.5,60,150)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contexto -->
+    <div class="section">
+      <div class="section-title">💬 Contexto de la semana</div>
+      <textarea class="notes-area" id="notasArea" placeholder="Cómo fue la semana en general, factores relevantes (viajes, estrés, enfermedad), logros destacados, ajustes que hacer..." rows="4"></textarea>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitMetrics()">Guardar métricas →</button>
+    <div style="text-align:center;margin-top:12px"><a href="index.html" style="color:var(--txt3);font-size:12px;text-decoration:none">← Ver dashboard</a></div>
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">📊</div>
+    <div class="success-title">Métricas guardadas</div>
+    <div class="success-msg" id="successDetail">—</div>
+  </div>
+</div>
+
+<script>
+const CONFIG = {
+  BASEROW_TOKEN: 'TU_TOKEN_AQUI',
+  BASEROW_URL: 'https://api.baserow.io',
+  TABLE_METRICAS: 931077, // metricas_semanales - ya existe en Baserow
+};
+
+const ALTURA = 177; // cm
+const BASE = { peso: 84.0, grasa: 20.0, cintura: 97.0 };
+
+let data = { peso: 84.0, grasa: 20.0, visceral: 11, cintura: 97.0 };
+
+const today = new Date();
+const weekNum = Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000+1)/7);
+
+document.getElementById('headerSub').textContent =
+  'Semana ' + weekNum + ' · ' + today.toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
+
+function adj(field, delta, min, max) {
+  data[field] = Math.min(max, Math.max(min, Math.round((data[field] + delta) * 10) / 10));
+  document.getElementById('val-' + field).textContent = data[field];
+  updateCalc();
+}
+
+function updateCalc() {
+  const lean = (data.peso * (1 - data.grasa/100)).toFixed(1);
+  const fatKg = (data.peso * data.grasa/100).toFixed(1);
+  const imc = (data.peso / ((ALTURA/100)**2)).toFixed(1);
+  document.getElementById('calc-lean').textContent = lean + ' kg';
+  document.getElementById('calc-fat-kg').textContent = fatKg + ' kg';
+  document.getElementById('calc-imc').textContent = imc;
+}
+updateCalc();
+
+async function fetchBaserow(endpoint, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: { 'Authorization': 'Token ' + CONFIG.BASEROW_TOKEN, 'Content-Type': 'application/json' }
+  };
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(CONFIG.BASEROW_URL + endpoint, opts);
+  if(!res.ok) throw new Error('API ' + res.status);
+  return res.json();
+}
+
+async function submitMetrics() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  try {
+    const lean = parseFloat((data.peso * (1 - data.grasa/100)).toFixed(1));
+    const payload = {
+      semana: 'S' + weekNum,
+      fecha_registro: today.toISOString().split('T')[0],
+      peso_kg: data.peso,
+      grasa_pct: data.grasa,
+      masa_magra_pct: parseFloat((lean/data.peso*100).toFixed(1)),
+      cintura_cm: data.cintura,
+      contexto_semana: document.getElementById('notasArea').value,
+    };
+    await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_METRICAS}/?user_field_names=true`, 'POST', payload);
+    const diff = { peso: (data.peso - BASE.peso).toFixed(1), cintura: (data.cintura - BASE.cintura).toFixed(1) };
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('successDetail').innerHTML =
+      `Peso: <strong>${data.peso} kg</strong> (${diff.peso > 0 ? '+' : ''}${diff.peso} vs inicio)<br>
+       Grasa: <strong>${data.grasa}%</strong><br>
+       Cintura: <strong>${data.cintura} cm</strong> (${diff.cintura > 0 ? '+' : ''}${diff.cintura} vs inicio)<br><br>
+       <a href="index.html" style="color:var(--gold)">Ver progreso en el dashboard →</a>`;
+    window.scrollTo(0,0);
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Guardar métricas →';
+    document.getElementById('errorBanner').innerHTML = `<div class="error-msg">⚠ Error: ${err.message}</div>`;
+  }
+}
+</script>
+</body>
+</html>
