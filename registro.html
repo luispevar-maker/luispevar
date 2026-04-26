@@ -129,10 +129,10 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 // IMPORTANTE: Sustituir por tu token de Baserow (solo lectura para vectores, lectura+escritura para registros)
 // Crear en Baserow → Ajustes → API tokens → Nuevo token
 const CONFIG = {
-  BASEROW_TOKEN: 43YeP2ouUjFbvkGszcYrNzDmMqEU5haA,   // ← reemplazar
+  BASEROW_TOKEN: '43YeP2ouUjFbvkGszcYrNzDmMqEU5haA',
   BASEROW_URL: 'https://api.baserow.io',
-  TABLE_VECTORES: 'ID_TABLA_VECTORES_ACTIVOS', // ← ID de la tabla vectores_activos
-  TABLE_REGISTRO: 'ID_TABLA_REGISTRO_DIARIO',  // ← ID de la tabla registro_diario
+  TABLE_VECTORES: 947555,
+  TABLE_REGISTRO: 947556,
   DATABASE_ID: 412088,
 };
 
@@ -162,11 +162,16 @@ async function init() {
     DAYS_ES[today.getDay()] + ', ' + today.getDate() + ' de ' + MONTHS_ES[today.getMonth()] + ' de ' + today.getFullYear();
   document.getElementById('headerWeek').textContent = 'Semana ' + weekNum + ' · Año 2026';
 
+  const main = document.getElementById('mainContent');
   try {
     await loadVectors();
     await checkAlreadyDone();
   } catch(err) {
-    showError('Error conectando con Baserow: ' + err.message + '<br>Comprueba que el token y los IDs de tabla son correctos en config.js');
+    main.innerHTML = `<div class="error-msg">
+      ⚠ <strong>Error cargando los datos</strong><br><br>
+      ${err.message}<br><br>
+      <small>Comprueba que el token de Baserow es correcto y que las tablas tienen los permisos adecuados.</small>
+    </div>`;
   }
 }
 
@@ -177,23 +182,29 @@ async function fetchBaserow(endpoint, method='GET', body=null) {
   };
   if(body) opts.body = JSON.stringify(body);
   const res = await fetch(CONFIG.BASEROW_URL + endpoint, opts);
-  if(!res.ok) throw new Error('API error ' + res.status + ': ' + await res.text());
+  if(!res.ok) {
+    const txt = await res.text();
+    throw new Error('Baserow API ' + res.status + ': ' + txt.substring(0,200));
+  }
   return method === 'DELETE' ? null : res.json();
 }
 
 async function loadVectors() {
-  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_VECTORES}/?user_field_names=true&filter__field_activo__boolean=true&size=100`);
-  vectors = (data.results || []).filter(v => v.activo);
+  // Fetch all vectors and filter activo=true client-side (más robusto que filtro server-side)
+  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_VECTORES}/?user_field_names=true&size=100`);
+  vectors = (data.results || []).filter(v => v.activo === true);
   vectors.sort((a,b) => {
     const catA = CAT_ORDER.indexOf(a.categoria); const catB = CAT_ORDER.indexOf(b.categoria);
-    return catA !== catB ? catA - catB : (a.orden||0) - (b.orden||0);
+    return catA !== catB ? catA - catB : (Number(a.orden)||0) - (Number(b.orden)||0);
   });
 }
 
 async function checkAlreadyDone() {
-  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_REGISTRO}/?user_field_names=true&filter__field_fecha__date_equal=${todayStr}&size=1`);
-  if(data.count > 0) {
-    renderAlreadyDone(data.results[0]);
+  // Fetch recent records and filter by today's date client-side
+  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_REGISTRO}/?user_field_names=true&size=10&order_by=-id`);
+  const todayRecord = (data.results || []).find(r => r.fecha && r.fecha.startsWith(todayStr));
+  if(todayRecord) {
+    renderAlreadyDone(todayRecord);
   } else {
     renderForm();
   }
