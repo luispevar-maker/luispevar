@@ -105,6 +105,28 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
       </div>
     </div>
 
+    <!-- Bienestar semanal -->
+    <div class="section">
+      <div class="section-title">⚡ Bienestar de la semana</div>
+      <div class="metric-badge">Valora cómo te has sentido en general esta semana</div>
+      <div class="num-row">
+        <div class="num-label"><div class="num-label-main">Nivel de energía</div><div class="num-label-sub">1 = agotado · 5 = excelente</div></div>
+        <div class="num-control">
+          <button class="num-btn" onclick="adj('energia',-1,1,5)">−</button>
+          <div class="num-val" id="val-energia">3</div>
+          <button class="num-btn" onclick="adj('energia',1,1,5)">+</button>
+        </div>
+      </div>
+      <div class="num-row">
+        <div class="num-label"><div class="num-label-main">Nivel de estrés</div><div class="num-label-sub">1 = sin estrés · 5 = muy alto</div></div>
+        <div class="num-control">
+          <button class="num-btn" onclick="adj('estres',-1,1,5)">−</button>
+          <div class="num-val" id="val-estres">2</div>
+          <button class="num-btn" onclick="adj('estres',1,1,5)">+</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Contexto -->
     <div class="section">
       <div class="section-title">💬 Contexto de la semana</div>
@@ -131,7 +153,7 @@ const CONFIG = {
 
 const ALTURA = 177;
 const BASE = { peso: 84.0, grasa: 20.0, cintura: 97.0 };
-let data = { peso: 84.0, grasa: 20.0, visceral: 11, cintura: 97.0 };
+let data = { peso: 84.0, grasa: 20.0, visceral: 11, cintura: 97.0, energia: 3, estres: 2 };
 
 function adj(field, delta, min, max) {
   data[field] = Math.min(max, Math.max(min, Math.round((data[field] + delta) * 10) / 10));
@@ -183,6 +205,8 @@ async function submitMetrics() {
       masa_magra_pct: parseFloat((lean / data.peso * 100).toFixed(1)),
       cintura_cm: data.cintura,
       grasa_visceral: data.visceral,
+      energia: data.energia,
+      estres: data.estres,
       contexto_semana: document.getElementById('notasArea').value
     };
     await fetchBaserow(

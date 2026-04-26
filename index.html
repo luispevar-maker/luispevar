@@ -398,10 +398,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
       <div class="alert-red"><div class="at">⚠ Grasa visceral Nivel 11</div><div class="ab">Riesgo elevado. Cardio LISS = mejor estímulo para reducirla. Objetivo: nivel 8–9.</div></div>
       <div class="sec-lbl">Fases del programa</div>
-      <div class="phase-list">
-        <div class="phase"><div class="ph-n">1</div><div><div class="ph-name">Base · Técnica</div><div class="ph-w">Sem 1–4 · Carga 65–70%</div></div></div>
-        <div class="phase"><div class="ph-n">2</div><div><div class="ph-name">Acumulación · Carga</div><div class="ph-w">Sem 5–12 · Progresión activa</div></div></div>
-        <div class="phase"><div class="ph-n">3</div><div><div class="ph-name">Intensificación</div><div class="ph-w">Sem 13–20 · Ajuste calórico</div></div></div>
+      <div class="phase-list" id="phaseList">
+        <!-- Rendered by JS based on planDays -->
       </div>
       <div class="sec-lbl">Macros diarios</div>
       <div class="mgrid">
@@ -457,7 +455,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         </div>
       </div>
 
-      <div class="prog-box">
+      <div class="prog-box" id="progBox">
         <div class="prog-title">Progresión de carga — Doble Progresión</div>
         <div class="prog-steps">
           <div class="ps">Rango bajo</div><div class="pa">→</div>
@@ -466,6 +464,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <div class="ps">+2 kg</div><div class="pa">→</div>
           <div class="ps">Reiniciar</div>
         </div>
+        <div id="phaseTrainingNote" style="margin-top:6px;font-size:8px;color:var(--txt3);font-style:italic"></div>
       </div>
 
       <div class="sec-lbl">Principios clave</div>
@@ -1214,10 +1213,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const wn = getWeekNum();
   document.getElementById('navWeek').textContent = 'Sem '+wn+' · '+now.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
 
-  // Plan days counter
+  // Plan days counter + active phase
   const planStart = new Date('2026-04-27T00:00:00');
   const planDays = Math.floor((now - planStart) / 86400000) + 1;
+  const planWeek = Math.ceil(planDays / 7);
   document.getElementById('planDays').textContent = 'Día ' + planDays + ' del plan';
+
+  // Phases definition
+  const phases = [
+    {n:'1', name:'Base · Técnica',     weeks:'Sem 1–4',   wStart:1,  wEnd:4,  detail:'Técnica, patrones de movimiento · Carga 65–70%'},
+    {n:'2', name:'Acumulación · Carga',weeks:'Sem 5–12',  wStart:5,  wEnd:12, detail:'Incremento progresivo de carga · Progresión activa'},
+    {n:'3', name:'Intensificación',    weeks:'Sem 13–20', wStart:13, wEnd:20, detail:'Mayor intensidad · Ajuste calórico según evolución'},
+    {n:'4', name:'Mantenimiento',      weeks:'Sem 21+',   wStart:21, wEnd:999,detail:'Consolidar cambios · Optimización continua'},
+  ];
+  const activePhase = phases.find(p => planWeek >= p.wStart && planWeek <= p.wEnd) || phases[3];
+  document.getElementById('phaseList').innerHTML = phases.map(p => {
+    const isActive = p.n === activePhase.n;
+    const isDone = planWeek > p.wEnd;
+    const border = isActive ? 'border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.07)' : isDone ? 'border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.04)' : '';
+    const numColor = isActive ? 'var(--gold)' : isDone ? 'var(--green)' : 'var(--txt3)';
+    const badge = isActive ? `<span style="font-size:6.5px;background:var(--gold-d);color:var(--gold);padding:1px 5px;border-radius:10px;margin-left:4px;font-family:'DM Mono',monospace;letter-spacing:.06em">ACTIVA</span>` : isDone ? `<span style="font-size:6.5px;color:var(--green)">✓</span>` : '';
+    return `<div class="phase" style="${border}">
+      <div class="ph-n" style="color:${numColor}">${p.n}</div>
+      <div style="flex:1;min-width:0">
+        <div class="ph-name" style="display:flex;align-items:center">${p.name}${badge}</div>
+        <div class="ph-w">${p.weeks} · ${isActive ? 'Sem actual: '+planWeek : p.detail.split('·')[0]}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Phase training note
+  const phaseNotes = {
+    '1': 'Fase 1: prioriza técnica limpia sobre carga. No subas peso si la ejecución no es perfecta.',
+    '2': 'Fase 2: sube carga cada 2–3 semanas cuando completes el rango alto en todas las series.',
+    '3': 'Fase 3: introduce técnicas de intensidad (rest-pause, superseries) y ajusta calorías según evolución.',
+    '4': 'Mantenimiento: mantén el volumen, ajusta la frecuencia según disponibilidad y energía.',
+  };
+  const noteEl = document.getElementById('phaseTrainingNote');
+  if(noteEl) noteEl.textContent = phaseNotes[activePhase.n] || '';
 
   // Mark today
   const todayIdx = now.getDay()===0?6:now.getDay()-1;
