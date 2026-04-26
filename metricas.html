@@ -182,6 +182,7 @@ async function submitMetrics() {
       grasa_pct: data.grasa,
       masa_magra_pct: parseFloat((lean / data.peso * 100).toFixed(1)),
       cintura_cm: data.cintura,
+      grasa_visceral: data.visceral,
       contexto_semana: document.getElementById('notasArea').value
     };
     await fetchBaserow(
