@@ -348,6 +348,14 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .notif-msg{color:inherit;opacity:.85}
 .notif-close{background:none;border:none;color:inherit;opacity:.5;cursor:pointer;font-size:14px;padding:0 2px;flex-shrink:0}
 .notif-close:hover{opacity:1}
+/* MEAL MINI CARD */
+.meal-mini{border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.meal-mini-head{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:var(--blue-d);border-bottom:1px solid var(--border)}
+.meal-mini-name{font-size:8.5px;font-weight:600;color:var(--blue)}
+.meal-mini-kcal{font-size:7.5px;font-family:'DM Mono',monospace;color:var(--txt3)}
+.meal-mini-body{padding:4px 8px;display:flex;flex-direction:column;gap:1px}
+.meal-mini-row{display:flex;justify-content:space-between;font-size:7.5px;color:var(--txt2);padding:1px 0}
+.meal-mini-qty{font-family:'DM Mono',monospace;color:var(--txt3)}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
@@ -380,7 +388,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="nav-sub">Inicio del plan: 27 abr 2026 · <span id="planDays">—</span></div>
     </div>
     <div class="nav-btns">
-      <button class="nb active" onclick="goTo('db')">🏠 Dashboard</button>
       <button class="nb" onclick="goTo('hab')">🎯 Hábitos 1%</button>
       <button class="nb" onclick="goTo('prog')">📊 Progreso</button>
       <a href="entreno.html" class="nb" style="text-decoration:none;display:flex;align-items:center">💪 Registrar entreno</a>
@@ -516,14 +523,16 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="sc"><div class="sh"><span style="font-size:9px">🐟</span><span class="sn">Omega-3 Omegor</span></div><div class="sd2">2 cáps · EPA+DHA TG · con grasa</div></div>
         <div class="sc"><div class="sh"><span style="font-size:9px">🌙</span><span class="sn">Mg Bisglicinato</span></div><div class="sd2">2 cáps · 30 min antes dormir</div></div>
       </div>
-      <div class="sec-lbl">Sueño — Factor limitante crítico</div>
+      <div class="sec-lbl">Menú del día</div>
+      <div id="todayMeals" style="display:flex;flex-direction:column;gap:3px"></div>
+      <div class="sec-lbl" style="margin-top:6px">Sueño</div>
       <div class="slg">
-        <div class="slc"><div class="sl-ic">🌅</div><div class="sl-t">Luz matutina</div><div class="sl-tx">Primeros 30 min. Sin gafas de sol.</div></div>
-        <div class="slc"><div class="sl-ic">🌡️</div><div class="sl-t">Temperatura</div><div class="sl-tx">Habitación 18–20°C.</div></div>
-        <div class="slc"><div class="sl-ic">📵</div><div class="sl-t">Sin pantallas</div><div class="sl-tx">60–90 min antes. Melatonina.</div></div>
-        <div class="slc"><div class="sl-ic">⏰</div><div class="sl-t">Horario fijo</div><div class="sl-tx">Misma hora ±30 min.</div></div>
-        <div class="slc"><div class="sl-ic">☕</div><div class="sl-t">Cafeína</div><div class="sl-tx">Cortar después de las 14h.</div></div>
-        <div class="slc"><div class="sl-ic">🫁</div><div class="sl-t">4-7-8</div><div class="sl-tx">Inhala 4, retén 7, exhala 8.</div></div>
+        <div class="slc"><div class="sl-ic">🌅</div><div class="sl-t">Luz matutina</div><div class="sl-tx">Primeros 30 min. Sin gafas.</div></div>
+        <div class="slc"><div class="sl-ic">⏰</div><div class="sl-t">Horario fijo</div><div class="sl-tx">±30 min todos los días.</div></div>
+        <div class="slc"><div class="sl-ic">📵</div><div class="sl-t">Sin pantallas</div><div class="sl-tx">60–90 min antes.</div></div>
+        <div class="slc"><div class="sl-ic">☕</div><div class="sl-t">Cafeína</div><div class="sl-tx">Cortar tras las 14h.</div></div>
+        <div class="slc"><div class="sl-ic">🌡️</div><div class="sl-t">18–20°C</div><div class="sl-tx">Habitación fresca.</div></div>
+        <div class="slc"><div class="sl-ic">🫁</div><div class="sl-t">4-7-8</div><div class="sl-tx">3–4 ciclos al acostarse.</div></div>
       </div>
     </div>
 
@@ -778,9 +787,29 @@ function renderDashboardData() {
     `<span class="tc-tag">${b.title}</span>`
   ).join('');
   document.getElementById('todayTags').innerHTML = tags || `<span class="tc-tag" style="background:rgba(100,116,139,.12);color:var(--txt3)">Descanso activo</span>`;
+  renderTodayMeals(todayIdx);
 }
 
-// ═══ HABITS ══════════════════════════════════════════════════════════════════
+function renderTodayMeals(dayIdx) {
+  const d = DAYS[dayIdx];
+  const el = document.getElementById('todayMeals');
+  if(!el || !d.meals) return;
+  el.innerHTML = d.meals.map(m => `
+    <div class="meal-mini">
+      <div class="meal-mini-head">
+        <span class="meal-mini-name">${m.n} · ${m.t}</span>
+        <span class="meal-mini-kcal">${m.k}</span>
+      </div>
+      <div class="meal-mini-body">
+        ${m.items.slice(0,4).map(it => `
+          <div class="meal-mini-row">
+            <span>${it[0]}</span>
+            <span class="meal-mini-qty">${it[1]}</span>
+          </div>`).join('')}
+        ${m.items.length > 4 ? `<div style="font-size:7px;color:var(--txt3);margin-top:1px">+${m.items.length-4} más...</div>` : ''}
+      </div>
+    </div>`).join('');
+}
 function renderHabits() {
   const cats = ['sleep','food','exercise'];
   const counts = {};
@@ -1022,7 +1051,8 @@ function goTo(screen) {
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   const s = document.getElementById('s-'+screen);
   if(s) s.classList.add('active');
-  const idx = ['db','hab','prog'].indexOf(screen);
+  // Only mark buttons for non-dashboard screens
+  const idx = ['hab','prog'].indexOf(screen);
   if(idx>=0) document.querySelectorAll('.nb')[idx].classList.add('active');
   if(screen==='hab') { if(S.loaded) renderHabits(); else loadAll().then(renderHabits); }
   if(screen==='prog') { if(S.loaded) renderProgress(); else loadAll().then(renderProgress); }
@@ -1364,6 +1394,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load Baserow data
   loadAll();
+
+  // Handle cross-page navigation (from entreno.html buttons)
+  const gotoScreen = sessionStorage.getItem('lp_goto');
+  if(gotoScreen) { sessionStorage.removeItem('lp_goto'); goTo(gotoScreen); }
 
   // Auto-refresh every 5 minutes
   setInterval(loadAll, 5*60*1000);

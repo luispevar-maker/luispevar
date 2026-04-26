@@ -11,10 +11,13 @@
 html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%);color:var(--txt)}
 
 /* NAV — matches index.html */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:42px;background:rgba(6,11,20,.9);border-bottom:1px solid rgba(255,255,255,.055);backdrop-filter:blur(8px);position:sticky;top:0;z-index:100}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:42px;background:rgba(6,11,20,.9);border-bottom:1px solid rgba(255,255,255,.055);backdrop-filter:blur(8px);position:sticky;top:0;z-index:100}
 .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.06em;color:#E8C97A;cursor:pointer;text-decoration:none}
-.nav-center{font-size:12px;font-weight:600;color:var(--txt);letter-spacing:.03em}
-.nav-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--txt3)}
+.nav-btns{display:flex;gap:3px}
+.nb{padding:5px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.09);background:transparent;color:#94A3B8;font-size:10.5px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;text-decoration:none;display:flex;align-items:center}
+.nb:hover{background:rgba(255,255,255,.05);color:#EEF2FF}
+.nb.active{background:rgba(201,168,76,.13);border-color:rgba(201,168,76,.3);color:#E8C97A}
+.nav-right{font-family:'DM Mono',monospace;font-size:10px;color:#7A92AA}
 
 .container{max-width:480px;margin:0 auto;padding:18px 14px 40px}
 .page-title{font-size:20px;font-weight:600;margin-bottom:3px;margin-top:4px}
@@ -83,7 +86,11 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
 
 <nav class="nav">
   <a href="index.html" class="nav-logo">LUISPEVAR</a>
-  <span class="nav-center">💪 Registro de entreno</span>
+  <div class="nav-btns">
+    <a href="index.html#hab" class="nb" onclick="sessionStorage.setItem('lp_goto','hab')">🎯 Hábitos 1%</a>
+    <a href="index.html#prog" class="nb" onclick="sessionStorage.setItem('lp_goto','prog')">📊 Progreso</a>
+    <a href="entreno.html" class="nb active">💪 Registrar entreno</a>
+  </div>
   <span class="nav-right" id="navSub">—</span>
 </nav>
 
