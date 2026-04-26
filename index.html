@@ -1408,6 +1408,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const todayCard = document.getElementById('dc'+todayIdx);
   if(todayCard){todayCard.classList.add('today');todayCard.innerHTML+='<div class="today-pip"></div>';}
 
+  // Render today's meals immediately (local data, no Baserow needed)
+  renderTodayMeals(todayIdx);
+
+  // Conditional quote (also local)
+  const isHeavy = ['fuerza','metabolico'].includes(DAYS[todayIdx].type);
+  const qT = document.getElementById('quoteTraining');
+  const qN = document.getElementById('quoteNutrition');
+  if(qT) qT.style.display = isHeavy ? 'none' : 'block';
+  if(qN) qN.style.display = isHeavy ? 'block' : 'none';
+
   // Backup status
   updateBackupStatus();
 
