@@ -504,7 +504,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
-    <!-- CENTER RIGHT: NUTRICIÓN + SUEÑO -->
+    <!-- CENTER RIGHT: NUTRICIÓN -->
     <div class="db-cr">
       <div class="ph2">
         <div class="ph2-icon" style="background:var(--green-d)">🥗</div>
@@ -525,13 +525,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="rule"><div class="rdot" style="background:var(--red)"></div><div class="rt"><strong>Cena sin almidón:</strong> Proteína + verdura + grasa. Mínimo 2h antes de dormir.</div></div>
         <div class="rule"><div class="rdot" style="background:var(--teal)"></div><div class="rt"><strong>AOVE medido:</strong> 8–12ml por comida. A ojo = 200–300 kcal invisibles extra.</div></div>
         <div class="rule"><div class="rdot" style="background:var(--purple)"></div><div class="rt"><strong>Hidratación:</strong> 2–2,5L diarios. La deshidratación concentra la glucosa.</div></div>
-      </div>
-      <div class="sec-lbl">Suplementación</div>
-      <div class="sg">
-        <div class="sc"><div class="sh"><span style="font-size:9px">💪</span><span class="sn">Creatina Creapure</span></div><div class="sd2">5g/día · cualquier momento</div></div>
-        <div class="sc"><div class="sh"><span style="font-size:9px">☀️</span><span class="sn">Vitamina D3 + K2</span></div><div class="sd2">2.000–4.000 UI · con comida</div></div>
-        <div class="sc"><div class="sh"><span style="font-size:9px">🐟</span><span class="sn">Omega-3 Omegor</span></div><div class="sd2">2 cáps · EPA+DHA TG · con grasa</div></div>
-        <div class="sc"><div class="sh"><span style="font-size:9px">🌙</span><span class="sn">Mg Bisglicinato</span></div><div class="sd2">2 cáps · 30 min antes dormir</div></div>
       </div>
       <div class="sec-lbl">Menú del día</div>
       <div id="todayMeals" style="display:flex;flex-direction:column;gap:3px"></div>
@@ -600,10 +593,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div style="font-size:8px;padding:5px 7px;background:var(--red-d);border:1px solid rgba(248,113,113,.15);border-radius:5px;color:var(--txt2)">
           <span style="color:var(--red);font-weight:600">Prediabetes:</span> CH bajo IG · Orden fibra→proteína→CH · Cena sin almidón · AOVE medido
         </div>
-      </div>
-      <div class="qbig" id="quoteRight">
-        <div class="qbt">No estás compitiendo con nadie. Estás construyendo la versión más fuerte y sana de ti mismo. Cada entreno, cada comida bien elegida, cada noche que priorizas el descanso es una decisión que tu cuerpo contabiliza.</div>
-        <div class="qbs">— El proceso es el destino.</div>
       </div>
     </div>
   </div>
@@ -814,16 +803,10 @@ function renderDashboardData() {
 
   // Conditional quote distribution across columns
   const isHeavy = ['fuerza','metabolico'].includes(DAYS[todayIdx].type);
-  const isRest = DAYS[todayIdx].type === 'descanso';
   const qT = document.getElementById('quoteTraining');
   const qN = document.getElementById('quoteNutrition');
-  const qR = document.getElementById('quoteRight');
-  // Training col: show quote on cardio/rest days (more free space)
   if(qT) qT.style.display = isHeavy ? 'none' : 'block';
-  // Nutrition col: show quote on heavy training days
   if(qN) qN.style.display = isHeavy ? 'block' : 'none';
-  // Right col: show quote only on rest days (all 4 cols have space)
-  if(qR) qR.style.display = isRest ? 'block' : 'none';
 }
 
 function renderTodayMeals(dayIdx) {
