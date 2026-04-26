@@ -362,9 +362,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <!-- NAV -->
   <nav class="nav">
     <div class="nav-brand">
-      <div class="nav-logo">LUISPEVAR</div>
+      <div class="nav-logo" onclick="goTo('db')" style="cursor:pointer" title="Ir al dashboard">LUISPEVAR</div>
       <div class="nav-dot"></div>
-      <div class="nav-sub">Guardamar del Segura · Plan Activo 2026</div>
+      <div class="nav-sub">Inicio del plan: 27 abr 2026 · <span id="planDays">—</span></div>
     </div>
     <div class="nav-btns">
       <button class="nb active" onclick="goTo('db')">🏠 Dashboard</button>
@@ -376,16 +376,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="nav-wk" id="navWeek">—</div>
     </div>
   </nav>
-
-  <!-- BACKUP BAR -->
-  <div class="bkp-bar">
-    <div class="bkp-status"><div class="bkp-dot" id="bkpDot"></div><span id="bkpTxt">—</span></div>
-    <div style="font-size:8px;color:var(--txt3)" id="bkpHint"></div>
-    <div class="bkp-actions">
-      <button class="bkp-btn bkp-imp" onclick="openImport()">⬆ Importar</button>
-      <button class="bkp-btn bkp-exp" onclick="exportData()">⬇ Exportar backup</button>
-    </div>
-  </div>
 
   <!-- ═══ DASHBOARD ═════════════════════════════════════════════════════════ -->
   <div id="s-db" class="screen active">
@@ -1223,6 +1213,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const now = new Date();
   const wn = getWeekNum();
   document.getElementById('navWeek').textContent = 'Sem '+wn+' · '+now.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
+
+  // Plan days counter
+  const planStart = new Date('2026-04-27T00:00:00');
+  const planDays = Math.floor((now - planStart) / 86400000) + 1;
+  document.getElementById('planDays').textContent = 'Día ' + planDays + ' del plan';
 
   // Mark today
   const todayIdx = now.getDay()===0?6:now.getDay()-1;
