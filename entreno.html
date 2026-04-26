@@ -85,10 +85,14 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo">LUISPEVAR</a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="index.html" class="nav-logo">LUISPEVAR</a>
+    <div style="width:3px;height:3px;border-radius:50%;background:#C9A84C;opacity:.5"></div>
+    <span style="font-size:9.5px;color:#8BAAC4;letter-spacing:.1em;text-transform:uppercase" id="planSub">Inicio del plan: 27 abr 2026</span>
+  </div>
   <div class="nav-btns">
-    <a href="index.html#hab" class="nb" onclick="sessionStorage.setItem('lp_goto','hab')">🎯 Hábitos 1%</a>
-    <a href="index.html#prog" class="nb" onclick="sessionStorage.setItem('lp_goto','prog')">📊 Progreso</a>
+    <a href="index.html" class="nb" onclick="sessionStorage.setItem('lp_goto','hab')">🎯 Hábitos 1%</a>
+    <a href="index.html" class="nb" onclick="sessionStorage.setItem('lp_goto','prog')">📊 Progreso</a>
     <a href="entreno.html" class="nb active">💪 Registrar entreno</a>
   </div>
   <span class="nav-right" id="navSub">—</span>
@@ -157,12 +161,16 @@ let setCounter = 0;
 let knownExercises = []; // loaded from Baserow history
 
 document.addEventListener('DOMContentLoaded', () => {
-  const sub = dayName + ', ' + today.getDate() + ' de ' + MONTHS_ES[today.getMonth()] + ' · Sem ' + weekNum;
-  document.getElementById('headerSub').textContent = sub;
+  const planStart = new Date('2026-04-27T00:00:00');
+  const planDays = Math.max(1, Math.floor((today - planStart) / 86400000) + 1);
+  const planSub = document.getElementById('planSub');
+  if(planSub) planSub.textContent = 'Inicio del plan: 27 abr 2026 · Día ' + planDays + ' del plan';
   const navSub = document.getElementById('navSub');
-  if(navSub) navSub.textContent = sub;
+  if(navSub) navSub.textContent = 'Sem ' + weekNum + ' · ' + today.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
+  const hSub = document.getElementById('headerSub');
+  if(hSub) hSub.textContent = dayName + ', ' + today.getDate() + ' de ' + MONTHS_ES[today.getMonth()];
   loadKnownExercises();
-  addSet(); // start with one set
+  addSet();
 });
 
 // ── API ──────────────────────────────────────────────────────────────────────

@@ -427,15 +427,21 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
       <div class="hdiv"></div>
       <div class="sec-lbl">Suplementación diaria</div>
-      <div class="supp-strip">
-        <div class="ssr"><span class="ssr-t">Cualquier momento</span><span class="ssr-v">Creatina · 5g</span></div>
-        <div class="ssr"><span class="ssr-t">Con comida</span><span class="ssr-v">Omegor · D3 · K2</span></div>
-        <div class="ssr"><span class="ssr-t">Con cena</span><span class="ssr-v">Omegor 1 cáp</span></div>
-        <div class="ssr"><span class="ssr-t">Antes de dormir</span><span class="ssr-v">Mg Bisglicinato · 2 cáps</span></div>
-      </div>
-      <div class="qt-bot">
-        <div class="qt">"No buscamos el gran cambio. Buscamos el 1% en cada vector, todos los días."</div>
-        <div class="qa">— Modelo Brailsford · Mejora marginal continua</div>
+      <div class="supp-strip" style="background:var(--purple-d);border-color:rgba(167,139,250,.15)">
+        <div class="ssr"><span class="ssr-t" style="color:var(--txt2);font-size:8px;font-weight:600">Cualquier momento</span></div>
+        <div class="ssr" style="margin-bottom:6px"><span class="ssr-t">Creatina monohidrato (Creapure)</span><span class="ssr-v" style="color:var(--teal);font-family:'DM Mono',monospace">5g</span></div>
+        <div class="ssr"><span class="ssr-t" style="color:var(--txt2);font-size:8px;font-weight:600">Con comida</span></div>
+        <div class="ssr"><span class="ssr-t">Omegor Vitality 1000</span><span class="ssr-v" style="color:var(--teal);font-family:'DM Mono',monospace">1 cáp · 535mg EPA+DHA</span></div>
+        <div class="ssr"><span class="ssr-t">Vitamina D3 (Solgar)</span><span class="ssr-v" style="color:var(--teal);font-family:'DM Mono',monospace">1 cáp · 2.000–4.000 UI</span></div>
+        <div class="ssr" style="margin-bottom:6px"><span class="ssr-t">Vitamina K2 MK-7 (Solgar)</span><span class="ssr-v" style="color:var(--teal);font-family:'DM Mono',monospace">1 cáp · 100 mcg</span></div>
+        <div class="ssr"><span class="ssr-t" style="color:var(--txt2);font-size:8px;font-weight:600">Con cena</span></div>
+        <div class="ssr" style="margin-bottom:6px"><span class="ssr-t">Omegor Vitality 1000</span><span class="ssr-v" style="color:var(--teal);font-family:'DM Mono',monospace">1 cáp · 535mg EPA+DHA</span></div>
+        <div class="ssr"><span class="ssr-t" style="color:var(--txt2);font-size:8px;font-weight:600">Antes de dormir</span></div>
+        <div class="ssr"><span class="ssr-t">Mg Bisglicinato (Solgar)</span><span class="ssr-v" style="color:var(--teal);font-family:'DM Mono',monospace">2 cáps · 240mg · 30–45 min</span></div>
+        <div style="margin-top:7px;padding:5px 0 2px;border-top:1px solid rgba(167,139,250,.15);font-size:7.5px;color:var(--txt3);display:flex;justify-content:space-between">
+          <span>EPA+DHA diario: <strong style="color:var(--teal)">1.606 mg</strong></span>
+          <span>Coste: <strong style="color:var(--txt2)">~74€/mes</strong></span>
+        </div>
       </div>
     </div>
 
@@ -492,6 +498,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="princ"><span style="font-size:8px">🟡</span><div class="pt"><strong>Rodilla dcha:</strong> Molestia en step-up → sustituir por leg press recorrido reducido ese día.</div></div>
         <div class="princ"><span style="font-size:8px">🟢</span><div class="pt"><strong>Cardio LISS 110–130 ppm:</strong> El estímulo más eficaz para reducir grasa visceral. Alta prioridad.</div></div>
       </div>
+      <div class="qbig" id="quoteTraining" style="margin-top:auto">
+        <div class="qbt">"No buscamos el gran cambio. Buscamos el 1% en cada vector, todos los días. El efecto compuesto hace el resto."</div>
+        <div class="qbs">— Modelo Brailsford · Mejora marginal continua</div>
+      </div>
     </div>
 
     <!-- CENTER RIGHT: NUTRICIÓN + SUEÑO -->
@@ -533,6 +543,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="slc"><div class="sl-ic">☕</div><div class="sl-t">Cafeína</div><div class="sl-tx">Cortar tras las 14h.</div></div>
         <div class="slc"><div class="sl-ic">🌡️</div><div class="sl-t">18–20°C</div><div class="sl-tx">Habitación fresca.</div></div>
         <div class="slc"><div class="sl-ic">🫁</div><div class="sl-t">4-7-8</div><div class="sl-tx">3–4 ciclos al acostarse.</div></div>
+      </div>
+      <div class="qbig" id="quoteNutrition" style="margin-top:auto;display:none">
+        <div class="qbt">No estás compitiendo con nadie. Estás construyendo la versión más fuerte y sana de ti mismo. Cada comida bien elegida es una decisión que tu cuerpo contabiliza.</div>
+        <div class="qbs">— El proceso es el destino.</div>
       </div>
     </div>
 
@@ -785,6 +799,13 @@ function renderDashboardData() {
   ).join('');
   document.getElementById('todayTags').innerHTML = tags || `<span class="tc-tag" style="background:rgba(100,116,139,.12);color:var(--txt3)">Descanso activo</span>`;
   renderTodayMeals(todayIdx);
+
+  // Conditional quote: training col on rest/cardio, nutrition col on heavy training days
+  const isHeavy = ['fuerza','metabolico'].includes(DAYS[todayIdx].type);
+  const qT = document.getElementById('quoteTraining');
+  const qN = document.getElementById('quoteNutrition');
+  if(qT) qT.style.display = isHeavy ? 'none' : 'block';
+  if(qN) qN.style.display = isHeavy ? 'block' : 'none';
 }
 
 function renderTodayMeals(dayIdx) {
