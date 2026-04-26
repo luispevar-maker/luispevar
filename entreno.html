@@ -5,15 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>LUISPEVAR · Registro de entreno</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--gold:#C9A84C;--gold-l:#E8C97A;--gold-d:rgba(201,168,76,.12);--green:#4ADE80;--green-d:rgba(74,222,128,.1);--blue:#60A5FA;--blue-d:rgba(96,165,250,.1);--red:#F87171;--red-d:rgba(248,113,113,.1);--bg:#060b14;--bg2:#0c1525;--bg3:#111d2e;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);--txt:#EEF2FF;--txt2:#94A3B8;--txt3:#7A92AA;}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%);color:var(--txt)}
-.container{max-width:480px;margin:0 auto;padding:16px 14px 40px}
-.header{text-align:center;padding:18px 0 14px}
-.header-logo{font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:6px}
-.header-title{font-size:22px;font-weight:600;margin-bottom:3px}
-.header-sub{font-size:11px;color:var(--txt3);font-family:'DM Mono',monospace}
+
+/* NAV — matches index.html */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:42px;background:rgba(6,11,20,.9);border-bottom:1px solid rgba(255,255,255,.055);backdrop-filter:blur(8px);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.06em;color:#E8C97A;cursor:pointer;text-decoration:none}
+.nav-center{font-size:12px;font-weight:600;color:var(--txt);letter-spacing:.03em}
+.nav-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--txt3)}
+
+.container{max-width:480px;margin:0 auto;padding:18px 14px 40px}
+.page-title{font-size:20px;font-weight:600;margin-bottom:3px;margin-top:4px}
+.page-sub{font-size:11px;color:var(--txt3);font-family:'DM Mono',monospace;margin-bottom:16px}
 .session-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px}
 .sess-btn{padding:7px 4px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--txt3);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:all .15s;-webkit-tap-highlight-color:transparent}
 .sess-btn.active{background:var(--blue-d);border-color:var(--blue);color:var(--blue);font-weight:600}
@@ -75,12 +80,16 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
 </style>
 </head>
 <body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">LUISPEVAR</a>
+  <span class="nav-center">💪 Registro de entreno</span>
+  <span class="nav-right" id="navSub">—</span>
+</nav>
+
 <div class="container">
-  <div class="header">
-    <div class="header-logo">LUISPEVAR · Guardamar del Segura</div>
-    <div class="header-title">💪 Registro de entreno</div>
-    <div class="header-sub" id="headerSub">Cargando...</div>
-  </div>
+  <div class="page-title">Registro de entreno</div>
+  <div class="page-sub" id="headerSub">Cargando...</div>
 
   <div id="mainContent">
     <div id="errorBanner"></div>
@@ -112,7 +121,6 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
     </div>
 
     <button class="submit-btn" id="submitBtn" onclick="submitSession()">Guardar sesión →</button>
-    <div style="text-align:center;margin-top:12px"><a href="index.html" style="color:var(--txt3);font-size:11px;text-decoration:none">← Volver al dashboard</a></div>
   </div>
 
   <div class="success-screen" id="successScreen">
@@ -144,8 +152,10 @@ let setCounter = 0;
 let knownExercises = []; // loaded from Baserow history
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('headerSub').textContent =
-    dayName + ', ' + today.getDate() + ' de ' + MONTHS_ES[today.getMonth()] + ' · Semana ' + weekNum;
+  const sub = dayName + ', ' + today.getDate() + ' de ' + MONTHS_ES[today.getMonth()] + ' · Sem ' + weekNum;
+  document.getElementById('headerSub').textContent = sub;
+  const navSub = document.getElementById('navSub');
+  if(navSub) navSub.textContent = sub;
   loadKnownExercises();
   addSet(); // start with one set
 });
@@ -350,11 +360,9 @@ async function submitSession() {
     document.getElementById('successScreen').style.display='block';
     const totalSets = filled.reduce((t,s)=>t+(parseInt(s.series)||1),0);
     document.getElementById('successDetail').innerHTML =
-      `<strong>${filled.length}</strong> ejercicios · <strong>${totalSets}</strong> series totales<br>
-       Sesión: <strong>${sessionType}</strong><br><br>
-       <a href="index.html" style="color:var(--gold)">← Volver al dashboard</a>
-       &nbsp;·&nbsp;
-       <a href="entreno.html" style="color:var(--txt3)">Registrar otra sesión</a>`;
+      '<strong>' + filled.length + '</strong> ejercicios &middot; <strong>' + totalSets + '</strong> series totales<br>' +
+      'Sesi&oacute;n: <strong>' + sessionType + '</strong><br><br>' +
+      '<a href="entreno.html" style="color:var(--gold)">Registrar otra sesi&oacute;n &rarr;</a>';
     window.scrollTo(0,0);
   } catch(err) {
     btn.disabled=false; btn.textContent='Guardar sesión →';
