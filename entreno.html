@@ -139,9 +139,7 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
 
 <script>
 const CONFIG = {
-  BASEROW_TOKEN: '43YeP2ouUjFbvkGszcYrNzDmMqEU5haA',
-  BASEROW_URL: 'https://api.baserow.io',
-  TABLE_ENTRENO: 947842,
+  WORKER: 'https://luispevar-proxy.luispevar.workers.dev',
 };
 
 const DAYS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
@@ -168,17 +166,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── API ──────────────────────────────────────────────────────────────────────
-async function brFetch(endpoint, method='GET', body=null) {
-  const opts = { method, headers: { 'Authorization':'Token '+CONFIG.BASEROW_TOKEN, 'Content-Type':'application/json' } };
+async function brFetch(resource, method='GET', body=null, params='') {
+  const url = `${CONFIG.WORKER}/${resource}${params?'?'+params:''}`;
+  const opts = { method, headers: { 'Content-Type':'application/json' } };
   if(body) opts.body = JSON.stringify(body);
-  const res = await fetch(CONFIG.BASEROW_URL + endpoint, opts);
+  const res = await fetch(url, opts);
   if(!res.ok) throw new Error(res.status+': '+(await res.text()).substring(0,100));
   return method==='DELETE' ? null : res.json();
 }
 
 async function loadKnownExercises() {
   try {
-    const data = await brFetch(`/api/database/rows/table/${CONFIG.TABLE_ENTRENO}/?user_field_names=true&size=200`);
+    const data = await brFetch('workout', 'GET', null, 'size=200');
     const names = [...new Set((data.results||[]).map(r=>r.ejercicio).filter(Boolean))].sort();
     knownExercises = names;
   } catch(e) {
@@ -358,7 +357,7 @@ async function submitSession() {
     }));
     // Baserow batch create - one row at a time (API doesn't support bulk with user_field_names)
     for(const row of rows) {
-      await brFetch(`/api/database/rows/table/${CONFIG.TABLE_ENTRENO}/?user_field_names=true`, 'POST', row);
+      await brFetch('workout', 'POST', row);
     }
     // Add new exercise names to local cache
     const newNames = filled.map(s=>s.ex.trim()).filter(n=>!knownExercises.includes(n));

@@ -130,11 +130,7 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 // IMPORTANTE: Sustituir por tu token de Baserow (solo lectura para vectores, lectura+escritura para registros)
 // Crear en Baserow → Ajustes → API tokens → Nuevo token
 const CONFIG = {
-  BASEROW_TOKEN: '43YeP2ouUjFbvkGszcYrNzDmMqEU5haA',
-  BASEROW_URL: 'https://api.baserow.io',
-  TABLE_VECTORES: 947555,
-  TABLE_REGISTRO: 947556,
-  DATABASE_ID: 412088,
+  WORKER: 'https://luispevar-proxy.luispevar.workers.dev',
 };
 
 const CAT_LABELS = { sleep: {label:'Sueño', cls:'cat-sleep'}, food: {label:'Alimentación', cls:'cat-food'}, exercise: {label:'Entrenamiento', cls:'cat-exercise'} };
@@ -175,23 +171,20 @@ async function init() {
   }
 }
 
-async function fetchBaserow(endpoint, method='GET', body=null) {
-  const opts = {
-    method,
-    headers: { 'Authorization': 'Token ' + CONFIG.BASEROW_TOKEN, 'Content-Type': 'application/json' }
-  };
+async function fetchBaserow(resource, method='GET', body=null, params='') {
+  const url = `${CONFIG.WORKER}/${resource}${params?'?'+params:''}`;
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
   if(body) opts.body = JSON.stringify(body);
-  const res = await fetch(CONFIG.BASEROW_URL + endpoint, opts);
+  const res = await fetch(url, opts);
   if(!res.ok) {
     const txt = await res.text();
-    throw new Error('Baserow API ' + res.status + ': ' + txt.substring(0,200));
+    throw new Error('Worker ' + res.status + ': ' + txt.substring(0,200));
   }
   return method === 'DELETE' ? null : res.json();
 }
 
 async function loadVectors() {
-  // Fetch all vectors and filter activo=true client-side (más robusto que filtro server-side)
-  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_VECTORES}/?user_field_names=true&size=100`);
+  const data = await fetchBaserow('vectors', 'GET', null, 'size=100');
   vectors = (data.results || []).filter(v => v.activo === true);
   vectors.sort((a,b) => {
     const catA = CAT_ORDER.indexOf(a.categoria); const catB = CAT_ORDER.indexOf(b.categoria);
@@ -200,8 +193,7 @@ async function loadVectors() {
 }
 
 async function checkAlreadyDone() {
-  // Fetch last 30 records without ordering by internal field
-  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_REGISTRO}/?user_field_names=true&size=30`);
+  const data = await fetchBaserow('daily', 'GET', null, 'size=30');
   const todayRecord = (data.results || []).find(r => r.fecha && r.fecha.startsWith(todayStr));
   if(todayRecord) {
     renderAlreadyDone(todayRecord);
@@ -377,7 +369,7 @@ async function submitForm() {
       notas: formData.notas,
     };
 
-    await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_REGISTRO}/?user_field_names=true`, 'POST', payload);
+    await fetchBaserow('daily', 'POST', payload);
 
     document.getElementById('mainContent').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';

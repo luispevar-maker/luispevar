@@ -151,9 +151,7 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
 
 <script>
 const CONFIG = {
-  BASEROW_TOKEN: '43YeP2ouUjFbvkGszcYrNzDmMqEU5haA',
-  BASEROW_URL: 'https://api.baserow.io',
-  TABLE_METRICAS: 931077,
+  WORKER: 'https://luispevar-proxy.luispevar.workers.dev',
 };
 
 const ALTURA = 177;
@@ -179,23 +177,6 @@ function updateCalc() {
   if(elImc)  elImc.textContent  = imc;
 }
 
-async function fetchBaserow(endpoint, method='GET', body=null) {
-  const opts = {
-    method,
-    headers: {
-      'Authorization': 'Token ' + CONFIG.BASEROW_TOKEN,
-      'Content-Type': 'application/json'
-    }
-  };
-  if(body) opts.body = JSON.stringify(body);
-  const res = await fetch(CONFIG.BASEROW_URL + endpoint, opts);
-  if(!res.ok) {
-    const txt = await res.text();
-    throw new Error('Baserow ' + res.status + ': ' + txt.substring(0, 200));
-  }
-  return res.json();
-}
-
 async function submitMetrics() {
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
@@ -214,10 +195,12 @@ async function submitMetrics() {
       estres: data.estres,
       contexto_semana: document.getElementById('notasArea').value
     };
-    await fetchBaserow(
-      '/api/database/rows/table/' + CONFIG.TABLE_METRICAS + '/?user_field_names=true',
-      'POST', payload
-    );
+    const res = await fetch(`${CONFIG.WORKER}/metrics`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('Worker ' + res.status);
     const diffPeso = (data.peso - BASE.peso).toFixed(1);
     const diffCint = (data.cintura - BASE.cintura).toFixed(1);
     document.getElementById('mainContent').style.display = 'none';

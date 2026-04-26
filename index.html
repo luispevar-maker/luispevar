@@ -658,11 +658,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <script>
 // ═══ CONFIG ══════════════════════════════════════════════════════════════════
-const BR = {
-  token: '43YeP2ouUjFbvkGszcYrNzDmMqEU5haA',
-  url: 'https://api.baserow.io',
-  T: { vectors: 947555, daily: 947556, metrics: 931077 }
-};
+const WORKER = 'https://luispevar-proxy.luispevar.workers.dev';
 const BASE = { weight:84, fat:20, lean:67.2, waist:97, visceral:11 };
 const GOALS = { weight:80, fat:15, lean:68, waist:91, visceral:8.5 };
 const CAT_CFG = {
@@ -676,21 +672,22 @@ let charts = {};
 // ═══ STATE ═══════════════════════════════════════════════════════════════════
 let S = { vectors:[], daily:[], metrics:[], loaded:false };
 
-// ═══ API ═════════════════════════════════════════════════════════════════════
-async function brFetch(endpoint, method='GET', body=null) {
-  const opts = { method, headers: { 'Authorization':'Token '+BR.token, 'Content-Type':'application/json' } };
+// ═══ API — via Cloudflare Worker (token never exposed) ════════════════════════
+async function brFetch(resource, method='GET', body=null, params='') {
+  const url = `${WORKER}/${resource}${params?'?'+params:''}`;
+  const opts = { method, headers: { 'Content-Type':'application/json' } };
   if(body) opts.body = JSON.stringify(body);
-  const res = await fetch(BR.url + endpoint, opts);
-  if(!res.ok) throw new Error('Baserow '+res.status+': '+(await res.text()).substring(0,150));
+  const res = await fetch(url, opts);
+  if(!res.ok) throw new Error('Worker '+res.status+': '+(await res.text()).substring(0,150));
   return method==='DELETE' ? null : res.json();
 }
 
 async function loadAll() {
   try {
     const [vRes, mRes, dRes] = await Promise.all([
-      brFetch(`/api/database/rows/table/${BR.T.vectors}/?user_field_names=true&size=100`),
-      brFetch(`/api/database/rows/table/${BR.T.metrics}/?user_field_names=true&size=50`),
-      brFetch(`/api/database/rows/table/${BR.T.daily}/?user_field_names=true&size=100`)
+      brFetch('vectors', 'GET', null, 'size=100'),
+      brFetch('metrics', 'GET', null, 'size=50'),
+      brFetch('daily',   'GET', null, 'size=100')
     ]);
     S.vectors  = (vRes.results||[]).sort((a,b) => ['sleep','food','exercise'].indexOf(a.categoria)-['sleep','food','exercise'].indexOf(b.categoria) || Number(a.orden)-Number(b.orden));
     S.metrics  = (mRes.results||[]).sort((a,b) => (a.semana||'').localeCompare(b.semana||''));
@@ -879,7 +876,7 @@ async function toggleVector(rowId, currentlyActive, vectorId) {
   try {
     const newActive = !currentlyActive;
     const payload = { activo: newActive, fecha_activacion: newActive ? new Date().toISOString().split('T')[0] : null };
-    await brFetch(`/api/database/rows/table/${BR.T.vectors}/${rowId}/?user_field_names=true`, 'PATCH', payload);
+    await brFetch('vectors', 'PATCH', payload, 'id='+rowId);
     const vec = S.vectors.find(v=>v.id===rowId);
     if(vec) { vec.activo=newActive; vec.fecha_activacion=payload.fecha_activacion; }
     renderHabits();
@@ -1040,7 +1037,7 @@ function renderProgress() {
 
 async function delMetric(rowId) {
   if(!confirm('¿Eliminar este registro?')) return;
-  await brFetch(`/api/database/rows/table/${BR.T.metrics}/${rowId}/`,'DELETE');
+  await brFetch('metrics', 'DELETE', null, 'id='+rowId);
   S.metrics = S.metrics.filter(m=>m.id!==rowId);
   renderProgress();
 }
