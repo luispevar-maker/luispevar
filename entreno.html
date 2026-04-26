@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LUISPEVAR · Registro de entreno</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--gold:#C9A84C;--gold-l:#E8C97A;--gold-d:rgba(201,168,76,.12);--green:#4ADE80;--green-d:rgba(74,222,128,.1);--blue:#60A5FA;--blue-d:rgba(96,165,250,.1);--red:#F87171;--red-d:rgba(248,113,113,.1);--bg:#060b14;--bg2:#0c1525;--bg3:#111d2e;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);--txt:#EEF2FF;--txt2:#94A3B8;--txt3:#7A92AA;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%);color:var(--txt)}
+.container{max-width:480px;margin:0 auto;padding:16px 14px 40px}
+.header{text-align:center;padding:18px 0 14px}
+.header-logo{font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:6px}
+.header-title{font-size:22px;font-weight:600;margin-bottom:3px}
+.header-sub{font-size:11px;color:var(--txt3);font-family:'DM Mono',monospace}
+.session-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px}
+.sess-btn{padding:7px 4px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--txt3);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.sess-btn.active{background:var(--blue-d);border-color:var(--blue);color:var(--blue);font-weight:600}
+.sets-container{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.set-card{background:rgba(12,21,37,.9);border:1px solid var(--border);border-radius:11px;overflow:hidden}
+.set-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
+.set-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);font-weight:500}
+.set-del{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;-webkit-tap-highlight-color:transparent}
+.set-del:hover{color:var(--red);background:var(--red-d)}
+.set-body{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+/* Exercise autocomplete */
+.ex-wrap{position:relative}
+.ex-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .15s}
+.ex-input:focus{border-color:rgba(201,168,76,.4)}
+.ex-input::placeholder{color:var(--txt3)}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#0c1525;border:1px solid var(--border2);border-radius:8px;margin-top:3px;z-index:100;overflow:hidden;display:none;max-height:180px;overflow-y:auto}
+.autocomplete-list.open{display:block}
+.ac-item{padding:9px 12px;font-size:12px;color:var(--txt2);cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03);-webkit-tap-highlight-color:transparent}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item:active{background:rgba(255,255,255,.05);color:var(--txt)}
+.ac-new{color:var(--gold);font-style:italic}
+/* Row of inputs */
+.inputs-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.field-wrap{display:flex;flex-direction:column;gap:3px}
+.field-wrap label{font-size:9px;color:var(--txt3);letter-spacing:.07em;text-transform:uppercase;font-weight:500;padding-left:1px}
+.num-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;color:var(--txt);font-family:'DM Mono',monospace;font-size:14px;font-weight:500;text-align:center;outline:none;-webkit-appearance:none;transition:border-color .15s}
+.num-input:focus{border-color:rgba(96,165,250,.4)}
+/* Sensacion stars */
+.sens-row{display:flex;align-items:center;justify-content:space-between}
+.sens-label{font-size:9px;color:var(--txt3);letter-spacing:.07em;text-transform:uppercase;font-weight:500}
+.stars{display:flex;gap:5px}
+.star{width:30px;height:30px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.star.active{background:rgba(201,168,76,.2);border-color:var(--gold)}
+/* Add set button */
+.add-set-btn{width:100%;padding:12px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);border-radius:10px;color:var(--txt3);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .15s;margin-bottom:10px}
+.add-set-btn:hover{background:rgba(255,255,255,.07);color:var(--txt)}
+/* Notes */
+.notes-area{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;resize:none;min-height:60px;line-height:1.5;margin-bottom:10px}
+.notes-area:focus{border-color:rgba(201,168,76,.3)}
+.notes-area::placeholder{color:var(--txt3)}
+/* Summary section */
+.summary{background:rgba(12,21,37,.9);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.summary-title{font-size:10px;font-weight:600;color:var(--txt2);letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px}
+.summary-row{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.summary-row:last-child{border-bottom:none}
+.summary-val{font-family:'DM Mono',monospace;color:var(--gold)}
+/* Submit */
+.submit-btn{width:100%;padding:15px;background:var(--gold);border:none;border-radius:11px;color:#0a0d14;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.submit-btn:hover{background:var(--gold-l)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.submit-btn:active{transform:scale(.98)}
+/* States */
+.error-msg{background:var(--red-d);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:10px 13px;color:var(--red);font-size:11.5px;margin-bottom:12px}
+.success-screen{display:none;text-align:center;padding:40px 20px}
+.success-icon{font-size:44px;margin-bottom:14px}
+.success-title{font-size:19px;font-weight:600;color:var(--green);margin-bottom:6px}
+.success-msg{font-size:12px;color:var(--txt3);line-height:1.6}
+.loading-line{text-align:center;padding:20px;color:var(--txt3);font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-logo">LUISPEVAR · Guardamar del Segura</div>
+    <div class="header-title">💪 Registro de entreno</div>
+    <div class="header-sub" id="headerSub">Cargando...</div>
+  </div>
+
+  <div id="mainContent">
+    <div id="errorBanner"></div>
+
+    <!-- Session type selector -->
+    <div class="session-selector" id="sessSelector">
+      <button class="sess-btn active" onclick="setSess(this,'Tren Superior A')">Sup A</button>
+      <button class="sess-btn" onclick="setSess(this,'Tren Inferior')">Inf</button>
+      <button class="sess-btn" onclick="setSess(this,'Cardio LISS')">Cardio</button>
+      <button class="sess-btn" onclick="setSess(this,'Full Body')">Full</button>
+      <button class="sess-btn" onclick="setSess(this,'Tren Superior B')">Sup B</button>
+      <button class="sess-btn" onclick="setSess(this,'Cardio largo')">Largo</button>
+      <button class="sess-btn" onclick="setSess(this,'Descanso activo')">Desc.</button>
+      <button class="sess-btn" onclick="setSess(this,'Otro')">Otro</button>
+    </div>
+
+    <!-- Sets -->
+    <div class="sets-container" id="setsContainer"></div>
+    <button class="add-set-btn" onclick="addSet()">+ Añadir ejercicio / serie</button>
+
+    <!-- Notes -->
+    <textarea class="notes-area" id="notasArea" placeholder="Observaciones de la sesión, cómo te has sentido, ajustes de técnica..." rows="3"></textarea>
+
+    <!-- Summary -->
+    <div class="summary" id="summaryCard" style="display:none">
+      <div class="summary-title">Resumen de la sesión</div>
+      <div id="summaryContent"></div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitSession()">Guardar sesión →</button>
+    <div style="text-align:center;margin-top:12px"><a href="index.html" style="color:var(--txt3);font-size:11px;text-decoration:none">← Volver al dashboard</a></div>
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🏋️</div>
+    <div class="success-title">Sesión guardada</div>
+    <div class="success-msg" id="successDetail">—</div>
+  </div>
+</div>
+
+<script>
+const CONFIG = {
+  BASEROW_TOKEN: '43YeP2ouUjFbvkGszcYrNzDmMqEU5haA',
+  BASEROW_URL: 'https://api.baserow.io',
+  TABLE_ENTRENO: 947842,
+};
+
+const DAYS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+const today = new Date();
+today.setHours(0,0,0,0);
+const todayStr = today.toISOString().split('T')[0];
+const weekNum = Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000+1)/7);
+const dayName = DAYS_ES[today.getDay()];
+
+let sessionType = 'Tren Superior A';
+let sets = [];
+let setCounter = 0;
+let knownExercises = []; // loaded from Baserow history
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('headerSub').textContent =
+    dayName + ', ' + today.getDate() + ' de ' + MONTHS_ES[today.getMonth()] + ' · Semana ' + weekNum;
+  loadKnownExercises();
+  addSet(); // start with one set
+});
+
+// ── API ──────────────────────────────────────────────────────────────────────
+async function brFetch(endpoint, method='GET', body=null) {
+  const opts = { method, headers: { 'Authorization':'Token '+CONFIG.BASEROW_TOKEN, 'Content-Type':'application/json' } };
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(CONFIG.BASEROW_URL + endpoint, opts);
+  if(!res.ok) throw new Error(res.status+': '+(await res.text()).substring(0,100));
+  return method==='DELETE' ? null : res.json();
+}
+
+async function loadKnownExercises() {
+  try {
+    const data = await brFetch(`/api/database/rows/table/${CONFIG.TABLE_ENTRENO}/?user_field_names=true&size=200`);
+    const names = [...new Set((data.results||[]).map(r=>r.ejercicio).filter(Boolean))].sort();
+    knownExercises = names;
+  } catch(e) {
+    // silent — autocomplete just won't have suggestions yet
+    knownExercises = [
+      'Press de banca con mancuernas','Remo en máquina','Press militar sentado',
+      'Jalón al pecho','Elevaciones laterales','Curl de bíceps','Extensión de tríceps',
+      'Sentadilla goblet','Leg press bilateral','Hip thrust','Curl femoral',
+      'Step-up','Bird-dog','Pallof press','Plancha frontal','Plancha lateral',
+      'Press inclinado','Dominadas asistidas','Remo con mancuerna','Face pull',
+      'Curl martillo','Press francés','Peso muerto rumano'
+    ];
+  }
+}
+
+// ── SESSION ──────────────────────────────────────────────────────────────────
+function setSess(btn, type) {
+  document.querySelectorAll('.sess-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  sessionType = type;
+}
+
+// ── SETS ──────────────────────────────────────────────────────────────────────
+function addSet() {
+  setCounter++;
+  const id = 'set-'+setCounter;
+  sets.push({ id, ex:'', series:3, reps:'', peso:'', sensacion:3 });
+  renderSets();
+  setTimeout(() => {
+    const input = document.getElementById('ex-'+id);
+    if(input) input.focus();
+  }, 100);
+}
+
+function removeSet(id) {
+  sets = sets.filter(s=>s.id!==id);
+  renderSets();
+  updateSummary();
+}
+
+function renderSets() {
+  const container = document.getElementById('setsContainer');
+  container.innerHTML = sets.map((s,i) => `
+    <div class="set-card" id="card-${s.id}">
+      <div class="set-header">
+        <span class="set-num">Ejercicio ${i+1}</span>
+        <button class="set-del" onclick="removeSet('${s.id}')" title="Eliminar">✕</button>
+      </div>
+      <div class="set-body">
+        <!-- Autocomplete exercise -->
+        <div class="ex-wrap">
+          <input class="ex-input" id="ex-${s.id}" type="text" placeholder="Nombre del ejercicio..."
+            value="${s.ex}" autocomplete="off"
+            oninput="updateEx('${s.id}',this.value);filterAC('${s.id}',this.value)"
+            onfocus="filterAC('${s.id}',this.value)"
+            onblur="setTimeout(()=>closeAC('${s.id}'),200)">
+          <div class="autocomplete-list" id="ac-${s.id}"></div>
+        </div>
+        <!-- Series / Reps / Peso -->
+        <div class="inputs-row">
+          <div class="field-wrap">
+            <label>Series</label>
+            <input class="num-input" type="number" min="1" max="20" value="${s.series}"
+              oninput="updateField('${s.id}','series',this.value);updateSummary()" inputmode="numeric">
+          </div>
+          <div class="field-wrap">
+            <label>Reps realizadas</label>
+            <input class="num-input" type="number" min="1" max="100" placeholder="10" value="${s.reps}"
+              oninput="updateField('${s.id}','reps',this.value);updateSummary()" inputmode="numeric">
+          </div>
+          <div class="field-wrap">
+            <label>Peso (kg)</label>
+            <input class="num-input" type="number" min="0" step="0.5" placeholder="0" value="${s.peso}"
+              oninput="updateField('${s.id}','peso',this.value);updateSummary()" inputmode="decimal">
+          </div>
+        </div>
+        <!-- Sensacion -->
+        <div class="sens-row">
+          <span class="sens-label">Sensación</span>
+          <div class="stars" id="stars-${s.id}">
+            ${[1,2,3,4,5].map(n=>`<div class="star ${n<=s.sensacion?'active':''}"
+              onclick="setSensacion('${s.id}',${n})">${n<=s.sensacion?'★':'☆'}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+  updateSummary();
+}
+
+// ── CONTROLS ─────────────────────────────────────────────────────────────────
+function updateEx(id, val) {
+  const s = sets.find(s=>s.id===id);
+  if(s) { s.ex = val; updateSummary(); }
+}
+function updateField(id, field, val) {
+  const s = sets.find(s=>s.id===id);
+  if(s) s[field] = val;
+}
+function setSensacion(id, val) {
+  const s = sets.find(s=>s.id===id);
+  if(!s) return;
+  s.sensacion = val;
+  const container = document.getElementById('stars-'+id);
+  if(container) container.querySelectorAll('.star').forEach((star,i)=>{
+    star.classList.toggle('active',i<val);
+    star.textContent = i<val?'★':'☆';
+  });
+}
+
+// ── AUTOCOMPLETE ──────────────────────────────────────────────────────────────
+function filterAC(id, val) {
+  const list = document.getElementById('ac-'+id);
+  if(!list) return;
+  const term = val.toLowerCase().trim();
+  const matches = term ? knownExercises.filter(e=>e.toLowerCase().includes(term)) : knownExercises.slice(0,8);
+  if(!matches.length && !term) { list.classList.remove('open'); return; }
+  const isNew = term && !knownExercises.some(e=>e.toLowerCase()===term);
+  list.innerHTML = matches.slice(0,8).map(e=>
+    `<div class="ac-item" onmousedown="selectAC('${id}','${e.replace(/'/g,"\\'")}')">
+      ${e.replace(new RegExp('('+term+')', 'gi'), '<strong>$1</strong>')}
+    </div>`).join('') +
+    (isNew && term ? `<div class="ac-item ac-new" onmousedown="selectAC('${id}','${val.replace(/'/g,"\\'")}')">+ Añadir "${val}"</div>` : '');
+  list.classList.add('open');
+}
+function selectAC(id, val) {
+  const input = document.getElementById('ex-'+id);
+  if(input) { input.value = val; updateEx(id, val); }
+  closeAC(id);
+}
+function closeAC(id) {
+  const list = document.getElementById('ac-'+id);
+  if(list) list.classList.remove('open');
+}
+
+// ── SUMMARY ──────────────────────────────────────────────────────────────────
+function updateSummary() {
+  const card = document.getElementById('summaryCard');
+  const content = document.getElementById('summaryContent');
+  const filled = sets.filter(s=>s.ex.trim());
+  if(!filled.length) { card.style.display='none'; return; }
+  card.style.display = 'block';
+  // Group by exercise
+  const byEx = {};
+  filled.forEach(s => {
+    const k = s.ex.trim();
+    if(!byEx[k]) byEx[k] = {series:[],totalSets:0};
+    byEx[k].totalSets += parseInt(s.series)||1;
+    if(s.peso) byEx[k].series.push(s.peso+'kg×'+(s.reps||'—'));
+  });
+  content.innerHTML = Object.entries(byEx).map(([ex,d])=>
+    `<div class="summary-row">
+      <span>${ex}</span>
+      <span class="summary-val">${d.totalSets} series ${d.series.length?'· '+d.series.join(', '):''}</span>
+    </div>`).join('');
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
+async function submitSession() {
+  const btn = document.getElementById('submitBtn');
+  const filled = sets.filter(s=>s.ex.trim());
+  if(!filled.length) {
+    document.getElementById('errorBanner').innerHTML = '<div class="error-msg">⚠ Añade al menos un ejercicio antes de guardar.</div>';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try {
+    const rows = filled.map(s => ({
+      fecha: todayStr,
+      semana: 'S'+weekNum,
+      tipo_sesion: sessionType,
+      ejercicio: s.ex.trim(),
+      series: parseInt(s.series)||1,
+      repeticiones: parseInt(s.reps)||0,
+      peso_kg: parseFloat(s.peso)||0,
+      sensacion: s.sensacion||3,
+      notas: document.getElementById('notasArea').value
+    }));
+    // Baserow batch create - one row at a time (API doesn't support bulk with user_field_names)
+    for(const row of rows) {
+      await brFetch(`/api/database/rows/table/${CONFIG.TABLE_ENTRENO}/?user_field_names=true`, 'POST', row);
+    }
+    // Add new exercise names to local cache
+    const newNames = filled.map(s=>s.ex.trim()).filter(n=>!knownExercises.includes(n));
+    knownExercises = [...new Set([...knownExercises,...newNames])].sort();
+    document.getElementById('mainContent').style.display='none';
+    document.getElementById('successScreen').style.display='block';
+    const totalSets = filled.reduce((t,s)=>t+(parseInt(s.series)||1),0);
+    document.getElementById('successDetail').innerHTML =
+      `<strong>${filled.length}</strong> ejercicios · <strong>${totalSets}</strong> series totales<br>
+       Sesión: <strong>${sessionType}</strong><br><br>
+       <a href="index.html" style="color:var(--gold)">← Volver al dashboard</a>
+       &nbsp;·&nbsp;
+       <a href="entreno.html" style="color:var(--txt3)">Registrar otra sesión</a>`;
+    window.scrollTo(0,0);
+  } catch(err) {
+    btn.disabled=false; btn.textContent='Guardar sesión →';
+    document.getElementById('errorBanner').innerHTML = `<div class="error-msg">⚠ Error al guardar: ${err.message}</div>`;
+  }
+}
+</script>
+</body>
+</html>
