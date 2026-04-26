@@ -200,8 +200,8 @@ async function loadVectors() {
 }
 
 async function checkAlreadyDone() {
-  // Fetch recent records and filter by today's date client-side
-  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_REGISTRO}/?user_field_names=true&size=10&order_by=-id`);
+  // Fetch last 30 records without ordering by internal field
+  const data = await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_REGISTRO}/?user_field_names=true&size=30`);
   const todayRecord = (data.results || []).find(r => r.fecha && r.fecha.startsWith(todayStr));
   if(todayRecord) {
     renderAlreadyDone(todayRecord);

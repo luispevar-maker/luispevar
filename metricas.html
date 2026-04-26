@@ -124,46 +124,48 @@ html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gr
 
 <script>
 const CONFIG = {
-  BASEROW_TOKEN: 43YeP2ouUjFbvkGszcYrNzDmMqEU5haA,
+  BASEROW_TOKEN: '43YeP2ouUjFbvkGszcYrNzDmMqEU5haA',
   BASEROW_URL: 'https://api.baserow.io',
-  TABLE_METRICAS: 931077, // metricas_semanales - ya existe en Baserow
+  TABLE_METRICAS: 931077,
 };
 
-const ALTURA = 177; // cm
+const ALTURA = 177;
 const BASE = { peso: 84.0, grasa: 20.0, cintura: 97.0 };
-
 let data = { peso: 84.0, grasa: 20.0, visceral: 11, cintura: 97.0 };
-
-const today = new Date();
-const weekNum = Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000+1)/7);
-
-document.getElementById('headerSub').textContent =
-  'Semana ' + weekNum + ' · ' + today.toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
 
 function adj(field, delta, min, max) {
   data[field] = Math.min(max, Math.max(min, Math.round((data[field] + delta) * 10) / 10));
-  document.getElementById('val-' + field).textContent = data[field];
+  const el = document.getElementById('val-' + field);
+  if(el) el.textContent = data[field];
   updateCalc();
 }
 
 function updateCalc() {
-  const lean = (data.peso * (1 - data.grasa/100)).toFixed(1);
-  const fatKg = (data.peso * data.grasa/100).toFixed(1);
-  const imc = (data.peso / ((ALTURA/100)**2)).toFixed(1);
-  document.getElementById('calc-lean').textContent = lean + ' kg';
-  document.getElementById('calc-fat-kg').textContent = fatKg + ' kg';
-  document.getElementById('calc-imc').textContent = imc;
+  const lean = (data.peso * (1 - data.grasa / 100)).toFixed(1);
+  const fatKg = (data.peso * data.grasa / 100).toFixed(1);
+  const imc = (data.peso / Math.pow(ALTURA / 100, 2)).toFixed(1);
+  const elLean = document.getElementById('calc-lean');
+  const elFat  = document.getElementById('calc-fat-kg');
+  const elImc  = document.getElementById('calc-imc');
+  if(elLean) elLean.textContent = lean + ' kg';
+  if(elFat)  elFat.textContent  = fatKg + ' kg';
+  if(elImc)  elImc.textContent  = imc;
 }
-updateCalc();
 
 async function fetchBaserow(endpoint, method='GET', body=null) {
   const opts = {
     method,
-    headers: { 'Authorization': 'Token ' + CONFIG.BASEROW_TOKEN, 'Content-Type': 'application/json' }
+    headers: {
+      'Authorization': 'Token ' + CONFIG.BASEROW_TOKEN,
+      'Content-Type': 'application/json'
+    }
   };
   if(body) opts.body = JSON.stringify(body);
   const res = await fetch(CONFIG.BASEROW_URL + endpoint, opts);
-  if(!res.ok) throw new Error('API ' + res.status);
+  if(!res.ok) {
+    const txt = await res.text();
+    throw new Error('Baserow ' + res.status + ': ' + txt.substring(0, 200));
+  }
   return res.json();
 }
 
@@ -172,32 +174,59 @@ async function submitMetrics() {
   btn.disabled = true;
   btn.textContent = 'Guardando...';
   try {
-    const lean = parseFloat((data.peso * (1 - data.grasa/100)).toFixed(1));
+    const lean = parseFloat((data.peso * (1 - data.grasa / 100)).toFixed(1));
     const payload = {
-      semana: 'S' + weekNum,
-      fecha_registro: today.toISOString().split('T')[0],
+      semana: 'S' + window._weekNum,
+      fecha_registro: window._todayStr,
       peso_kg: data.peso,
       grasa_pct: data.grasa,
-      masa_magra_pct: parseFloat((lean/data.peso*100).toFixed(1)),
+      masa_magra_pct: parseFloat((lean / data.peso * 100).toFixed(1)),
       cintura_cm: data.cintura,
-      contexto_semana: document.getElementById('notasArea').value,
+      contexto_semana: document.getElementById('notasArea').value
     };
-    await fetchBaserow(`/api/database/rows/table/${CONFIG.TABLE_METRICAS}/?user_field_names=true`, 'POST', payload);
-    const diff = { peso: (data.peso - BASE.peso).toFixed(1), cintura: (data.cintura - BASE.cintura).toFixed(1) };
+    await fetchBaserow(
+      '/api/database/rows/table/' + CONFIG.TABLE_METRICAS + '/?user_field_names=true',
+      'POST', payload
+    );
+    const diffPeso = (data.peso - BASE.peso).toFixed(1);
+    const diffCint = (data.cintura - BASE.cintura).toFixed(1);
     document.getElementById('mainContent').style.display = 'none';
-    document.getElementById('successScreen').style.display = 'block';
+    const sc = document.getElementById('successScreen');
+    sc.style.display = 'block';
     document.getElementById('successDetail').innerHTML =
-      `Peso: <strong>${data.peso} kg</strong> (${diff.peso > 0 ? '+' : ''}${diff.peso} vs inicio)<br>
-       Grasa: <strong>${data.grasa}%</strong><br>
-       Cintura: <strong>${data.cintura} cm</strong> (${diff.cintura > 0 ? '+' : ''}${diff.cintura} vs inicio)<br><br>
-       <a href="index.html" style="color:var(--gold)">Ver progreso en el dashboard →</a>`;
-    window.scrollTo(0,0);
+      'Peso: <strong>' + data.peso + ' kg</strong> (' + (diffPeso > 0 ? '+' : '') + diffPeso + ' vs inicio)<br>' +
+      'Grasa: <strong>' + data.grasa + '%</strong><br>' +
+      'Cintura: <strong>' + data.cintura + ' cm</strong> (' + (diffCint > 0 ? '+' : '') + diffCint + ' vs inicio)<br>' +
+      'Grasa visceral: <strong>Nivel ' + data.visceral + '</strong><br><br>' +
+      '<a href="index.html" style="color:var(--gold)">Ver progreso en el dashboard →</a>';
+    window.scrollTo(0, 0);
   } catch(err) {
     btn.disabled = false;
     btn.textContent = 'Guardar métricas →';
-    document.getElementById('errorBanner').innerHTML = `<div class="error-msg">⚠ Error: ${err.message}</div>`;
+    const eb = document.getElementById('errorBanner');
+    if(eb) eb.innerHTML = '<div class="error-msg">⚠ Error: ' + err.message + '</div>';
   }
 }
+
+// Init — esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    const today = new Date();
+    const weekNum = Math.ceil(
+      ((today - new Date(today.getFullYear(), 0, 1)) / 86400000 + 1) / 7
+    );
+    window._weekNum = weekNum;
+    window._todayStr = today.toISOString().split('T')[0];
+
+    const sub = document.getElementById('headerSub');
+    if(sub) sub.textContent = 'Semana ' + weekNum + ' · ' +
+      today.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    updateCalc();
+  } catch(e) {
+    console.error('Init error:', e);
+  }
+});
 </script>
 </body>
 </html>
