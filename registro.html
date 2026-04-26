@@ -328,8 +328,10 @@ function toggleHabit(id) {
 
 function adjNum(field, delta, min, max) {
   formData[field] = Math.min(max, Math.max(min, Math.round((formData[field] + delta) * 10) / 10));
-  const el = document.getElementById('val-' + field.replace('_','').replace('sueno','horas'));
-  if(el) el.textContent = formData[field] + (field.includes('horas') ? 'h' : '');
+  // Mapa directo de campo → ID del elemento de display
+  const elId = field === 'horas_sueno' ? 'val-horas' : ('val-' + field);
+  const el = document.getElementById(elId);
+  if(el) el.textContent = formData[field] + (field === 'horas_sueno' ? 'h' : '');
 }
 
 function setStars(field, containerId, val) {
