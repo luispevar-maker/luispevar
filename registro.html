@@ -104,12 +104,16 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 </head>
 <body>
 <nav class="nav">
-  <a href="index.html" class="nav-logo">LUISPEVAR</a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="index.html" class="nav-logo">LUISPEVAR</a>
+    <div style="width:3px;height:3px;border-radius:50%;background:#C9A84C;opacity:.5"></div>
+    <span style="font-size:9.5px;color:#8BAAC4;letter-spacing:.1em;text-transform:uppercase" id="planSub">Inicio del plan: 27 abr 2026</span>
+  </div>
   <div class="nav-btns">
     <a href="registro.html" class="nb active" style="text-decoration:none;display:flex;align-items:center">📝 Registro diario</a>
     <a href="metricas.html" class="nb " style="text-decoration:none;display:flex;align-items:center">📊 Métricas sem.</a>
-    <a href="index.html" class="nb" onclick="sessionStorage.setItem('lp_goto','hab')" style="text-decoration:none;display:flex;align-items:center">🎯 Hábitos 1%</a>
-    <a href="index.html" class="nb" onclick="sessionStorage.setItem('lp_goto','prog')" style="text-decoration:none;display:flex;align-items:center">📊 Progreso</a>
+    <a href="index.html?goto=hab" class="nb" style="text-decoration:none;display:flex;align-items:center">🎯 Hábitos 1%</a>
+    <a href="index.html?goto=prog" class="nb" style="text-decoration:none;display:flex;align-items:center">📊 Progreso</a>
     <a href="entreno.html" class="nb " style="text-decoration:none;display:flex;align-items:center">💪 Entreno</a>
   </div>
   <span class="nav-right" id="navRight">—</span>
@@ -152,13 +156,18 @@ let formData = {
 
 const today = new Date();
 today.setHours(0,0,0,0);
-const todayStr = today.toISOString().split('T')[0];
+const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
 const weekNum = Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000+1)/7);
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function init() {
+  const planStart = new Date('2026-04-27T00:00:00');
+  const planDays = Math.max(1, Math.floor((today - planStart) / 86400000) + 1);
+  const planSub = document.getElementById('planSub');
+  if(planSub) planSub.textContent = 'Inicio del plan: 27 abr 2026 · Día ' + planDays + ' del plan';
   const navRight = document.getElementById('navRight');
-  if(navRight) navRight.textContent = DAYS_ES[today.getDay()] + ' · Sem ' + weekNum;
+  const wn = Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000+1)/7);
+  if(navRight) navRight.textContent = 'Sem ' + wn + ' · ' + today.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
 
   const main = document.getElementById('mainContent');
   try {

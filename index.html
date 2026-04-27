@@ -80,7 +80,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;color:var(--txt);backgrou
 .db-left{width:clamp(250px,17%,295px);background:rgba(6,11,20,.82);border-right:1px solid var(--border);padding:13px 14px;flex-shrink:0;display:flex;flex-direction:column;gap:0;overflow:hidden;justify-content:space-between}
 .db-cl{flex:1;padding:12px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:9px;overflow:hidden;min-width:0}
 .db-cr{flex:1;padding:12px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:8px;overflow:hidden;min-width:0}
-.db-right{width:clamp(220px,15.5%,265px);background:rgba(6,11,20,.82);padding:13px 13px;flex-shrink:0;display:flex;flex-direction:column;gap:0;overflow:hidden}
+.db-right{width:clamp(220px,15.5%,265px);background:rgba(6,11,20,.82);padding:13px 13px;flex-shrink:0;display:flex;flex-direction:column;gap:0;overflow-y:auto}
 
 /* Left col */
 .brand-tag{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:3px}
@@ -391,8 +391,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="nav-btns">
       <a href="registro.html" class="nb" style="text-decoration:none;display:flex;align-items:center">📝 Registro diario</a>
       <a href="metricas.html" class="nb" style="text-decoration:none;display:flex;align-items:center">📊 Métricas sem.</a>
-      <button class="nb" onclick="goTo('hab')">🎯 Hábitos 1%</button>
-      <button class="nb" onclick="goTo('prog')">📊 Progreso</button>
+      <button class="nb" id="nb-hab" onclick="goTo('hab')">🎯 Hábitos 1%</button>
+      <button class="nb" id="nb-prog" onclick="goTo('prog')">📊 Progreso</button>
       <a href="entreno.html" class="nb" style="text-decoration:none;display:flex;align-items:center">💪 Entreno</a>
     </div>
     <div class="nav-right">
@@ -483,6 +483,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
         </div>
       </div>
 
+      <!-- Compact training exercises -->
+      <div id="compactTraining" style="display:none">
+        <div class="sec-lbl">Ejercicios</div>
+        <div id="compactExercises" style="display:flex;flex-direction:column;gap:2px"></div>
+      </div>
+
       <div class="prog-box" id="progBox">
         <div class="prog-title">Progresión de carga — Doble Progresión</div>
         <div class="prog-steps">
@@ -539,10 +545,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="slc"><div class="sl-ic">☕</div><div><div class="sl-t">Cafeína</div><div class="sl-tx">Cortar tras las 14h.</div></div></div>
         <div class="slc"><div class="sl-ic">🌡️</div><div><div class="sl-t">18–20°C</div><div class="sl-tx">Habitación fresca.</div></div></div>
         <div class="slc"><div class="sl-ic">🫁</div><div><div class="sl-t">4-7-8</div><div class="sl-tx">3–4 ciclos al acostarse.</div></div></div>
-      </div>
-      <div class="qbig" id="quoteNutrition" style="margin-top:auto;display:none">
-        <div class="qbt">No estás compitiendo con nadie. Estás construyendo la versión más fuerte y sana de ti mismo. Cada comida bien elegida es una decisión que tu cuerpo contabiliza.</div>
-        <div class="qbs">— El proceso es el destino.</div>
       </div>
     </div>
 
@@ -796,22 +798,40 @@ function renderDashboardData() {
 
 function renderTodaySession(dayIdx) {
   const d = DAYS[dayIdx];
+  if(!d) return;
   const titleEl = document.getElementById('todayTitle');
   const durEl = document.getElementById('todayDur');
   const tagsEl = document.getElementById('todayTags');
   if(!titleEl) return;
   titleEl.textContent = d.typeLabel;
   titleEl.style.color = d.color;
-  durEl.textContent = '⏱ ' + d.duration + ' · 📍 ' + d.location;
+  if(durEl) durEl.textContent = '⏱ ' + d.duration + ' · 📍 ' + d.location;
   const workBlocks = d.blocks.filter(b => b.title !== 'Calentamiento');
-  const tags = workBlocks.map(b =>
-    `<span class="tc-tag">${b.title}</span>`
-  ).join('');
-  tagsEl.innerHTML = tags || `<span class="tc-tag" style="background:rgba(100,116,139,.12);color:var(--txt3)">Descanso activo</span>`;
+  if(tagsEl) tagsEl.innerHTML = workBlocks.map(b =>
+    `<span class="tc-tag">${b.title}</span>`).join('') ||
+    `<span class="tc-tag" style="background:rgba(100,116,139,.12);color:var(--txt3)">Descanso activo</span>`;
 
-  // Show/hide principles based on how many blocks there are
+  // Compact exercises — one line per exercise, no notes
+  const compactEl = document.getElementById('compactTraining');
+  const exEl = document.getElementById('compactExercises');
+  const isTrainingDay = d.type !== 'descanso';
+  if(compactEl && exEl && isTrainingDay) {
+    compactEl.style.display = 'block';
+    const allEx = [];
+    workBlocks.forEach(b => b.ex.forEach(e => allEx.push({n:e.n, s:e.s, r:e.r, d:e.d})));
+    exEl.innerHTML = allEx.map(e =>
+      `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(17,29,46,.7);border:1px solid var(--border);border-radius:4px;font-size:8px">
+        <span style="flex:1;color:var(--txt2)">${e.n}</span>
+        ${e.s!=='—'?`<span style="color:var(--txt3);font-family:'DM Mono',monospace;white-space:nowrap">${e.s}×${e.r}</span>`:''}
+      </div>`).join('');
+  } else if(compactEl) {
+    compactEl.style.display = 'none';
+  }
+
+  // Principles: hide on heavy days (many exercises), show on cardio/rest
   const princEl = document.getElementById('principlesBlock');
-  if(princEl) princEl.style.display = workBlocks.length > 3 ? 'none' : 'flex';
+  const isHeavy = ['fuerza','metabolico'].includes(d.type);
+  if(princEl) princEl.style.display = isHeavy ? 'none' : 'flex';
 }
 
 function renderTodayMeals(dayIdx) {
@@ -1072,14 +1092,13 @@ async function delMetric(rowId) {
 // ═══ NAV ═════════════════════════════════════════════════════════════════════
 function goTo(screen) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  ['nb-hab','nb-prog'].forEach(id=>{ const b=document.getElementById(id); if(b) b.classList.remove('active'); });
   const s = document.getElementById('s-'+screen);
   if(s) s.classList.add('active');
-  // Only mark buttons for non-dashboard screens
-  const idx = ['hab','prog'].indexOf(screen);
-  if(idx>=0) document.querySelectorAll('.nb')[idx].classList.add('active');
-  if(screen==='hab') { if(S.loaded) renderHabits(); else loadAll().then(renderHabits); }
-  if(screen==='prog') { if(S.loaded) renderProgress(); else loadAll().then(renderProgress); }
+  const activeBtn = document.getElementById('nb-'+screen);
+  if(activeBtn) activeBtn.classList.add('active');
+  if(screen==='hab') { if(S.loaded) renderHabits(); else loadAll().then(()=>renderHabits()); }
+  if(screen==='prog') { if(S.loaded) renderProgress(); else loadAll().then(()=>renderProgress()); }
 }
 
 // ═══ TRAINING DAYS ═══════════════════════════════════════════════════════════
@@ -1309,7 +1328,8 @@ function analyzeAndNotify() {
   
   const D = S.daily; const M = S.metrics;
   const now = new Date();
-  const todayStr2 = now.toISOString().split('T')[0];
+  // Use LOCAL date (not UTC) to avoid day-shift issues in UTC+2
+  const todayStr2 = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   const weekNum2 = getWeekNum();
 
   // 1. Registro diario — done or pending
@@ -1429,12 +1449,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTodayMeals(todayIdx);
   renderTodaySession(todayIdx);
 
-  // Conditional quote (also local)
-  const isHeavy = ['fuerza','metabolico'].includes(DAYS[todayIdx].type);
+  // Conditional quote in training col
+  const isHeavy2 = ['fuerza','metabolico'].includes(DAYS[todayIdx].type);
   const qT = document.getElementById('quoteTraining');
-  const qN = document.getElementById('quoteNutrition');
-  if(qT) qT.style.display = isHeavy ? 'none' : 'block';
-  if(qN) qN.style.display = isHeavy ? 'block' : 'none';
+  if(qT) qT.style.display = isHeavy2 ? 'none' : 'block';
 
   // Backup status
   updateBackupStatus();
@@ -1442,9 +1460,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load Baserow data
   loadAll();
 
-  // Handle cross-page navigation (from entreno.html buttons)
-  const gotoScreen = sessionStorage.getItem('lp_goto');
-  if(gotoScreen) { sessionStorage.removeItem('lp_goto'); goTo(gotoScreen); }
+  // Handle cross-page navigation via URL param (more reliable than sessionStorage+onclick)
+  const gotoParam = new URLSearchParams(location.search).get('goto');
+  if(gotoParam) {
+    history.replaceState(null,'',location.pathname); // clean URL
+    goTo(gotoParam);
+  }
+  const gotoSession = sessionStorage.getItem('lp_goto');
+  if(gotoSession) { sessionStorage.removeItem('lp_goto'); goTo(gotoSession); }
 
   // Auto-refresh every 5 minutes
   setInterval(loadAll, 5*60*1000);
