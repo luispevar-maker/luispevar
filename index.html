@@ -336,17 +336,18 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 /* NOTIFICATIONS */
 .notif-bar{position:relative;z-index:50;flex-shrink:0}
-.notif{display:flex;align-items:flex-start;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:10px;line-height:1.5;animation:slideIn .3s ease}
+.notif{display:flex;align-items:center;gap:8px;padding:5px 16px;border-bottom:1px solid var(--border);font-size:9.5px;line-height:1.4;animation:slideIn .3s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.notif.warn{background:rgba(251,191,36,.07);border-left:3px solid var(--amber);color:#c8a020}
-.notif.alert{background:rgba(248,113,113,.07);border-left:3px solid var(--red);color:#d46060}
-.notif.info{background:rgba(96,165,250,.07);border-left:3px solid var(--blue);color:#6ba3f0}
-.notif.success{background:rgba(74,222,128,.07);border-left:3px solid var(--green);color:#52c47a}
-.notif-icon{font-size:13px;flex-shrink:0;margin-top:1px}
-.notif-body{flex:1}
-.notif-title{font-weight:600;margin-bottom:1px}
-.notif-msg{color:inherit;opacity:.85}
-.notif-close{background:none;border:none;color:inherit;opacity:.5;cursor:pointer;font-size:14px;padding:0 2px;flex-shrink:0}
+.notif.warn{background:rgba(251,191,36,.06);border-left:3px solid var(--amber);color:#c8a020}
+.notif.alert{background:rgba(248,113,113,.06);border-left:3px solid var(--red);color:#d46060}
+.notif.info{background:rgba(96,165,250,.06);border-left:3px solid var(--blue);color:#6ba3f0}
+.notif.success{background:rgba(74,222,128,.06);border-left:3px solid var(--green);color:#52c47a}
+.notif-icon{font-size:12px;flex-shrink:0}
+.notif-body{flex:1;display:flex;align-items:baseline;gap:6px}
+.notif-title{font-weight:600;flex-shrink:0}
+.notif-msg{color:inherit;opacity:.85;font-size:9px}
+.notif-close{background:none;border:none;color:inherit;opacity:.4;cursor:pointer;font-size:13px;padding:0 2px;flex-shrink:0;margin-left:auto}
+.notif-close:hover{opacity:1}
 .notif-close:hover{opacity:1}
 /* MEAL MINI CARD */
 .meal-mini{border:1px solid var(--border);border-radius:6px;overflow:hidden}
@@ -388,10 +389,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="nav-sub">Inicio del plan: 27 abr 2026 · <span id="planDays">—</span></div>
     </div>
     <div class="nav-btns">
-      <button class="nb" onclick="goTo('hab')">🎯 Hábitos 1%</button>
-      <button class="nb" onclick="goTo('prog')">📊 Progreso</button>
       <a href="registro.html" class="nb" style="text-decoration:none;display:flex;align-items:center">📝 Registro diario</a>
       <a href="metricas.html" class="nb" style="text-decoration:none;display:flex;align-items:center">📊 Métricas sem.</a>
+      <button class="nb" onclick="goTo('hab')">🎯 Hábitos 1%</button>
+      <button class="nb" onclick="goTo('prog')">📊 Progreso</button>
       <a href="entreno.html" class="nb" style="text-decoration:none;display:flex;align-items:center">💪 Entreno</a>
     </div>
     <div class="nav-right">
@@ -812,6 +813,8 @@ function renderTodaySession(dayIdx) {
   const princEl = document.getElementById('principlesBlock');
   if(princEl) princEl.style.display = workBlocks.length > 3 ? 'none' : 'flex';
 }
+
+function renderTodayMeals(dayIdx) {
   const d = DAYS[dayIdx];
   const el = document.getElementById('todayMeals');
   if(!el || !d.meals) return;
@@ -1284,55 +1287,81 @@ function dismiss(id) {
 }
 
 function showNotif(id, type, icon, title, msg) {
-  if(getDismissed().includes(id)) return;
   const bar = document.getElementById('notifBar');
   if(!bar || document.getElementById('notif-'+id)) return;
   const div = document.createElement('div');
   div.className = 'notif '+type;
   div.id = 'notif-'+id;
   div.innerHTML = `<span class="notif-icon">${icon}</span>
-    <div class="notif-body"><div class="notif-title">${title}</div><div class="notif-msg">${msg}</div></div>
-    <button class="notif-close" onclick="dismiss('${id}')" title="Cerrar">✕</button>`;
+    <div class="notif-body">
+      <span class="notif-title">${title}</span>
+      <span class="notif-msg">${msg}</span>
+    </div>
+    <button class="notif-close" onclick="this.parentElement.remove()" title="Cerrar">✕</button>`;
   bar.appendChild(div);
 }
 
 function analyzeAndNotify() {
   if(!S.loaded) return;
+  // Clear all existing notifications first to avoid duplicates on refresh
+  const bar = document.getElementById('notifBar');
+  if(bar) bar.innerHTML = '';
+  
   const D = S.daily; const M = S.metrics;
   const now = new Date();
   const todayStr2 = now.toISOString().split('T')[0];
+  const weekNum2 = getWeekNum();
 
-  // 1. No registro hoy
+  // 1. Registro diario — done or pending
   const todayRec = D.find(r => r.fecha && r.fecha.startsWith(todayStr2));
-  if(!todayRec) {
+  if(todayRec) {
+    const h = todayRec.horas_sueno ? todayRec.horas_sueno+'h sueño' : '';
+    const s = todayRec.sesion_completada ? '✓ sesión completada' : '✗ sin sesión';
+    showNotif('registro-hoy-ok', 'success', '✅',
+      'Registro diario completado hoy',
+      `${h} · ${s} · Sensación ${todayRec.sensacion_general||'—'}/5 &nbsp;<a href="registro.html" style="color:inherit;text-decoration:underline;font-size:10px">Modificar →</a>`);
+  } else {
     showNotif('no-registro-hoy', 'info', '📝',
       'Sin registro diario hoy',
-      'Tómate 2 minutos para registrar el día. <a href="registro.html" style="color:inherit;font-weight:600;text-decoration:underline">Abrir formulario diario →</a>');
+      'Tómate 2 minutos para registrar el día. <a href="registro.html" style="color:inherit;font-weight:600;text-decoration:underline">Abrir formulario →</a>');
   }
 
-  // 2. Estancamiento de peso — 3 semanas sin bajar 0.5kg
+  // 2. Métricas semanales — done or pending
+  const thisWeekMetric = M.find(m => m.semana === 'S'+weekNum2);
+  if(thisWeekMetric) {
+    const diffPeso = M.length > 1 ? (parseFloat(thisWeekMetric.peso_kg) - parseFloat(M[M.length-2].peso_kg)).toFixed(1) : null;
+    const diffStr = diffPeso ? (parseFloat(diffPeso)<0 ? '↓'+Math.abs(diffPeso)+'kg' : '↑+'+diffPeso+'kg') : '';
+    showNotif('metricas-sem-ok', 'success', '📊',
+      `Métricas S${weekNum2} registradas — ${thisWeekMetric.peso_kg}kg ${diffStr} · Cintura ${thisWeekMetric.cintura_cm}cm`,
+      `Grasa ${thisWeekMetric.grasa_pct}% · Visceral ${thisWeekMetric.grasa_visceral||'—'} &nbsp;<a href="metricas.html" style="color:inherit;text-decoration:underline;font-size:10px">Modificar →</a>`);
+  } else if(now.getDay() >= 1) {
+    showNotif('no-metricas-sem', 'info', '📊',
+      'Sin métricas semanales esta semana',
+      'Registra tu peso, grasa y cintura. <a href="metricas.html" style="color:inherit;font-weight:600;text-decoration:underline">Registrar ahora →</a>');
+  }
+
+  // 3. Estancamiento de peso — 3 semanas sin bajar 0.5kg
   if(M.length >= 3) {
     const last3 = M.slice(-3).map(m=>parseFloat(m.peso_kg));
-    if(last3.every(w=>w!==null) && Math.max(...last3)-Math.min(...last3) < 0.5) {
-      const wk = 'estanc-'+M[M.length-1].semana;
-      showNotif(wk, 'warn', '⚠️',
+    if(last3.every(w=>!isNaN(w)) && Math.max(...last3)-Math.min(...last3) < 0.5) {
+      showNotif('estanc-'+M[M.length-1].semana, 'warn', '⚠️',
         'Peso estancado — 3 semanas sin cambio significativo',
-        'Revisa primero el sueño (es la causa más frecuente), después el déficit calórico. No ajustar ambas cosas a la vez.');
+        'Revisa primero el sueño, después el déficit calórico. No ajustar ambas cosas a la vez.');
     }
   }
 
-  // 3. Sueño deficiente — media < 6h en los últimos 7 días
+  // 4. Sueño deficiente
   const lastWeekD = D.slice(-7).filter(r=>r.horas_sueno);
   if(lastWeekD.length >= 3) {
     const avgSl = lastWeekD.reduce((s,r)=>s+parseFloat(r.horas_sueno),0)/lastWeekD.length;
     if(avgSl < 6) {
       showNotif('sleep-low', 'alert', '🌙',
-        `Sueño insuficiente — media de ${avgSl.toFixed(1)}h en los últimos ${lastWeekD.length} días`,
-        'Con menos de 6h el cortisol se dispara y bloquea la pérdida de grasa visceral. Prioriza el sueño esta semana sobre todo lo demás.');
+        `Sueño insuficiente — media de ${avgSl.toFixed(1)}h`,
+        'Con menos de 6h el cortisol bloquea la pérdida de grasa visceral. Prioriza el sueño esta semana.');
     }
   }
 
-  // 4. Adherencia a hábitos muy baja — <40% en los últimos 7 días
+  // 5. Adherencia a hábitos baja
   const lastWeekHabits = D.slice(-7).map(r => {
     if(!r.habitos_json) return null;
     try { const h=JSON.parse(r.habitos_json); const v=Object.values(h); return v.length?v.filter(Boolean).length/v.length*100:null; } catch{return null;}
@@ -1342,21 +1371,9 @@ function analyzeAndNotify() {
     if(avgH < 40) {
       showNotif('habits-low', 'warn', '🎯',
         `Adherencia a hábitos baja — ${Math.round(avgH)}% esta semana`,
-        'Demasiados hábitos activos a la vez puede ser la causa. Considera desactivar alguno y centrarte en los más impactantes.');
+        'Considera desactivar algún vector y centrarte en los más impactantes.');
     }
   }
-
-  // 5. Sin métricas semanales esta semana
-  const weekNum2 = getWeekNum();
-  const thisWeekMetric = M.find(m => m.semana === 'S'+weekNum2);
-  if(!thisWeekMetric && now.getDay() >= 1) { // From Monday
-    showNotif('no-metricas-sem', 'info', '📊',
-      'Sin métricas semanales registradas',
-      'No hay registro de peso y métricas para esta semana. <a href="metricas.html" style="color:inherit;font-weight:600">Registrar ahora →</a>');
-  }
-
-  // 6. Sesión de hoy sin registrar en entreno (si hay tabla de entreno)
-  // — se añadirá cuando la tabla registros_entreno esté activa
 }
 document.addEventListener('DOMContentLoaded', () => {
   // Week label
