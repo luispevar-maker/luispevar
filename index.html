@@ -171,10 +171,10 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;color:var(--txt);backgrou
 .sn{font-size:8.5px;font-weight:600;color:var(--txt)}
 .sd2{font-family:'DM Mono',monospace;font-size:7px;color:var(--txt3);line-height:1.3}
 .slg{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
-.slc{padding:5px 7px;background:var(--purple-d);border:1px solid rgba(167,139,250,.12);border-radius:5px}
-.sl-ic{font-size:10px;margin-bottom:2px}
-.sl-t{font-size:8px;font-weight:600;color:var(--purple);margin-bottom:1px}
-.sl-tx{font-size:7.5px;color:var(--txt2);line-height:1.35}
+.slc{padding:5px 7px;background:var(--purple-d);border:1px solid rgba(167,139,250,.12);border-radius:5px;display:flex;align-items:center;gap:6px}
+.sl-ic{font-size:12px;flex-shrink:0}
+.sl-t{font-size:8px;font-weight:600;color:var(--purple);line-height:1.3}
+.sl-tx{font-size:7px;color:var(--txt2);line-height:1.3}
 
 /* Right col objectives */
 .tgt-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
@@ -390,7 +390,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="nav-btns">
       <button class="nb" onclick="goTo('hab')">🎯 Hábitos 1%</button>
       <button class="nb" onclick="goTo('prog')">📊 Progreso</button>
-      <a href="entreno.html" class="nb" style="text-decoration:none;display:flex;align-items:center">💪 Registrar entreno</a>
+      <a href="registro.html" class="nb" style="text-decoration:none;display:flex;align-items:center">📝 Registro diario</a>
+      <a href="metricas.html" class="nb" style="text-decoration:none;display:flex;align-items:center">📊 Métricas sem.</a>
+      <a href="entreno.html" class="nb" style="text-decoration:none;display:flex;align-items:center">💪 Entreno</a>
     </div>
     <div class="nav-right">
       <div class="nav-live"><div class="live-dot"></div><span id="liveStatus">Cargando...</span></div>
@@ -493,7 +495,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
 
       <div class="sec-lbl">Principios clave</div>
-      <div class="principles">
+      <div class="principles" id="principlesBlock">
         <div class="princ"><span style="font-size:8px">🔴</span><div class="pt"><strong>L5-S1:</strong> Sin peso muerto convencional ni flexión lumbar bajo carga. Goblet squat, hip thrust, core antiextensión.</div></div>
         <div class="princ"><span style="font-size:8px">🟡</span><div class="pt"><strong>Rodilla dcha:</strong> Molestia en step-up → sustituir por leg press recorrido reducido ese día.</div></div>
         <div class="princ"><span style="font-size:8px">🟢</span><div class="pt"><strong>Cardio LISS 110–130 ppm:</strong> El estímulo más eficaz para reducir grasa visceral. Alta prioridad.</div></div>
@@ -530,12 +532,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div id="todayMeals" style="display:flex;flex-direction:column;gap:3px"></div>
       <div class="sec-lbl" style="margin-top:6px">Sueño</div>
       <div class="slg">
-        <div class="slc"><div class="sl-ic">🌅</div><div class="sl-t">Luz matutina</div><div class="sl-tx">Primeros 30 min. Sin gafas.</div></div>
-        <div class="slc"><div class="sl-ic">⏰</div><div class="sl-t">Horario fijo</div><div class="sl-tx">±30 min todos los días.</div></div>
-        <div class="slc"><div class="sl-ic">📵</div><div class="sl-t">Sin pantallas</div><div class="sl-tx">60–90 min antes.</div></div>
-        <div class="slc"><div class="sl-ic">☕</div><div class="sl-t">Cafeína</div><div class="sl-tx">Cortar tras las 14h.</div></div>
-        <div class="slc"><div class="sl-ic">🌡️</div><div class="sl-t">18–20°C</div><div class="sl-tx">Habitación fresca.</div></div>
-        <div class="slc"><div class="sl-ic">🫁</div><div class="sl-t">4-7-8</div><div class="sl-tx">3–4 ciclos al acostarse.</div></div>
+        <div class="slc"><div class="sl-ic">🌅</div><div><div class="sl-t">Luz matutina</div><div class="sl-tx">Primeros 30 min. Sin gafas.</div></div></div>
+        <div class="slc"><div class="sl-ic">⏰</div><div><div class="sl-t">Horario fijo</div><div class="sl-tx">±30 min todos los días.</div></div></div>
+        <div class="slc"><div class="sl-ic">📵</div><div><div class="sl-t">Sin pantallas</div><div class="sl-tx">60–90 min antes.</div></div></div>
+        <div class="slc"><div class="sl-ic">☕</div><div><div class="sl-t">Cafeína</div><div class="sl-tx">Cortar tras las 14h.</div></div></div>
+        <div class="slc"><div class="sl-ic">🌡️</div><div><div class="sl-t">18–20°C</div><div class="sl-tx">Habitación fresca.</div></div></div>
+        <div class="slc"><div class="sl-ic">🫁</div><div><div class="sl-t">4-7-8</div><div class="sl-tx">3–4 ciclos al acostarse.</div></div></div>
       </div>
       <div class="qbig" id="quoteNutrition" style="margin-top:auto;display:none">
         <div class="qbt">No estás compitiendo con nadie. Estás construyendo la versión más fuerte y sana de ti mismo. Cada comida bien elegida es una decisión que tu cuerpo contabiliza.</div>
@@ -789,27 +791,27 @@ function renderDashboardData() {
   document.getElementById('wsSleep').textContent = sleepAvg!=='—' ? sleepAvg+'h' : '—';
   document.getElementById('wsHabits').textContent = habitsAvg;
 
-  // Today session
-  const todayIdx = dayOfWeek; // 0=Mon
-  const todaySess = DAYS[todayIdx];
-  document.getElementById('todayTitle').textContent = todaySess.typeLabel;
-  document.getElementById('todayTitle').style.color = todaySess.color;
-  document.getElementById('todayDur').textContent = '⏱ '+todaySess.duration+' · '+todaySess.location;
-  const tags = todaySess.blocks.filter(b=>b.title!=='Calentamiento').map(b=>
-    `<span class="tc-tag">${b.title}</span>`
-  ).join('');
-  document.getElementById('todayTags').innerHTML = tags || `<span class="tc-tag" style="background:rgba(100,116,139,.12);color:var(--txt3)">Descanso activo</span>`;
-  renderTodayMeals(todayIdx);
-
-  // Conditional quote distribution across columns
-  const isHeavy = ['fuerza','metabolico'].includes(DAYS[todayIdx].type);
-  const qT = document.getElementById('quoteTraining');
-  const qN = document.getElementById('quoteNutrition');
-  if(qT) qT.style.display = isHeavy ? 'none' : 'block';
-  if(qN) qN.style.display = isHeavy ? 'block' : 'none';
 }
 
-function renderTodayMeals(dayIdx) {
+function renderTodaySession(dayIdx) {
+  const d = DAYS[dayIdx];
+  const titleEl = document.getElementById('todayTitle');
+  const durEl = document.getElementById('todayDur');
+  const tagsEl = document.getElementById('todayTags');
+  if(!titleEl) return;
+  titleEl.textContent = d.typeLabel;
+  titleEl.style.color = d.color;
+  durEl.textContent = '⏱ ' + d.duration + ' · 📍 ' + d.location;
+  const workBlocks = d.blocks.filter(b => b.title !== 'Calentamiento');
+  const tags = workBlocks.map(b =>
+    `<span class="tc-tag">${b.title}</span>`
+  ).join('');
+  tagsEl.innerHTML = tags || `<span class="tc-tag" style="background:rgba(100,116,139,.12);color:var(--txt3)">Descanso activo</span>`;
+
+  // Show/hide principles based on how many blocks there are
+  const princEl = document.getElementById('principlesBlock');
+  if(princEl) princEl.style.display = workBlocks.length > 3 ? 'none' : 'flex';
+}
   const d = DAYS[dayIdx];
   const el = document.getElementById('todayMeals');
   if(!el || !d.meals) return;
@@ -1300,14 +1302,12 @@ function analyzeAndNotify() {
   const now = new Date();
   const todayStr2 = now.toISOString().split('T')[0];
 
-  // 1. No registro hoy (si es después de las 10:00h)
-  if(now.getHours() >= 10) {
-    const todayRec = D.find(r => r.fecha && r.fecha.startsWith(todayStr2));
-    if(!todayRec) {
-      showNotif('no-registro-hoy', 'info', '📝',
-        'Sin registro diario hoy',
-        'Aún no has registrado el día de hoy. <a href="registro.html" style="color:inherit;font-weight:600">Abrir formulario →</a>');
-    }
+  // 1. No registro hoy
+  const todayRec = D.find(r => r.fecha && r.fecha.startsWith(todayStr2));
+  if(!todayRec) {
+    showNotif('no-registro-hoy', 'info', '📝',
+      'Sin registro diario hoy',
+      'Tómate 2 minutos para registrar el día. <a href="registro.html" style="color:inherit;font-weight:600;text-decoration:underline">Abrir formulario diario →</a>');
   }
 
   // 2. Estancamiento de peso — 3 semanas sin bajar 0.5kg
@@ -1408,8 +1408,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const todayCard = document.getElementById('dc'+todayIdx);
   if(todayCard){todayCard.classList.add('today');todayCard.innerHTML+='<div class="today-pip"></div>';}
 
-  // Render today's meals immediately (local data, no Baserow needed)
+  // Render today's meals and session immediately (local data, no Baserow needed)
   renderTodayMeals(todayIdx);
+  renderTodaySession(todayIdx);
 
   // Conditional quote (also local)
   const isHeavy = ['fuerza','metabolico'].includes(DAYS[todayIdx].type);
