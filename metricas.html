@@ -245,10 +245,62 @@ document.addEventListener('DOMContentLoaded', function() {
     if(sub) sub.textContent = 'Sem ' + weekNum + ' · ' + today.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
 
     updateCalc();
+    if(!sessionStorage.getItem('lp_show_form')) {
+      checkMetricsDone(weekNum);
+    } else {
+      sessionStorage.removeItem('lp_show_form');
+    }
   } catch(e) {
     console.error('Init error:', e);
   }
 });
+
+function showMetricsForm() {
+  // Restore the original form by reloading with a flag
+  sessionStorage.setItem('lp_show_form', '1');
+  location.reload();
+}
+
+async function checkMetricsDone(weekNum) {
+  try {
+    const res = await fetch(CONFIG.WORKER + '/metrics?size=10');
+    if(!res.ok) return;
+    const data = await res.json();
+    const all = (data.results||[]).sort((a,b)=>(b.semana||'').localeCompare(a.semana||''));
+    const thisWeek = all.find(m => m.semana === 'S'+weekNum);
+    const lastRecord = all[0];
+    if(thisWeek) {
+      showMetricsDone(thisWeek, true);
+    } else if(lastRecord) {
+      showMetricsDone(lastRecord, false);
+    }
+  } catch(e) { /* silent - show form normally */ }
+}
+
+function showMetricsDone(m, isThisWeek) {
+  const main = document.getElementById('mainContent');
+  if(!main) return;
+  const lean = m.peso_kg ? (m.peso_kg*(1-m.grasa_pct/100)).toFixed(1) : '—';
+  main.innerHTML = `
+    <div style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:22px 18px;margin-bottom:16px;text-align:center">
+      <div style="font-size:32px;margin-bottom:8px">${isThisWeek ? '✅' : '📋'}</div>
+      <div style="font-size:17px;font-weight:600;color:#4ADE80;margin-bottom:4px">${isThisWeek ? 'Métricas '+m.semana+' registradas' : 'Último registro: '+m.semana}</div>
+      ${!isThisWeek ? '<div style="color:#FBBF24;font-size:11px;margin-bottom:10px">⚠ Aún no has registrado esta semana</div>' : ''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;text-align:left">
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#7A92AA;margin-bottom:2px">Peso</div><div style="font-size:20px;font-weight:700;color:#EEF2FF">${m.peso_kg} kg</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#7A92AA;margin-bottom:2px">Grasa corporal</div><div style="font-size:20px;font-weight:700;color:#EEF2FF">${m.grasa_pct}%</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#7A92AA;margin-bottom:2px">Cintura</div><div style="font-size:20px;font-weight:700;color:#EEF2FF">${m.cintura_cm} cm</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#7A92AA;margin-bottom:2px">Masa magra</div><div style="font-size:20px;font-weight:700;color:#EEF2FF">${lean} kg</div></div>
+      </div>
+      ${m.contexto_semana ? `<div style="font-size:11px;color:#94A3B8;font-style:italic;margin-top:6px">"${m.contexto_semana}"</div>` : ''}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${!isThisWeek ? `<button onclick="showMetricsForm()" style="background:#C9A84C;border:none;color:#0a0d14;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:14px;border-radius:11px;cursor:pointer;width:100%">Registrar métricas esta semana →</button>` : ''}
+      <button onclick="showMetricsForm()" style="background:none;border:1px solid rgba(255,255,255,.12);color:#94A3B8;font-family:'DM Sans',sans-serif;font-size:11px;padding:9px 16px;border-radius:8px;cursor:pointer">
+        ${isThisWeek ? 'Modificar registro de esta semana' : 'Modificar registro anterior'}
+      </button>
+    </div>`;
+}
 </script>
 </body>
 </html>

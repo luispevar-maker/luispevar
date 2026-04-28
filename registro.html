@@ -205,27 +205,43 @@ async function loadVectors() {
 
 async function checkAlreadyDone() {
   const data = await fetchBaserow('daily', 'GET', null, 'size=30');
-  const todayRecord = (data.results || []).find(r => r.fecha && r.fecha.startsWith(todayStr));
+  const all = (data.results || []).sort((a,b) => (b.fecha||'').localeCompare(a.fecha||''));
+  const todayRecord = all.find(r => r.fecha && r.fecha.startsWith(todayStr));
+  const lastRecord = all[0]; // most recent regardless of date
   if(todayRecord) {
-    renderAlreadyDone(todayRecord);
+    renderAlreadyDone(todayRecord, true);
+  } else if(lastRecord) {
+    renderAlreadyDone(lastRecord, false);
   } else {
     renderForm();
   }
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
-function renderAlreadyDone(entry) {
+function renderAlreadyDone(entry, isToday) {
   const main = document.getElementById('mainContent');
+  const fechaStr = entry.fecha ? new Date(entry.fecha+'T12:00').toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long'}) : '—';
+  const habitos = entry.habitos_json ? (() => { try { const h=JSON.parse(entry.habitos_json); const done=Object.values(h).filter(Boolean).length; const total=Object.values(h).length; return `${done}/${total} hábitos`; } catch{return '—';} })() : '—';
   main.innerHTML = `
     <div class="already-done">
-      <div class="ad-icon">✅</div>
-      <div class="ad-title">Ya registraste hoy</div>
-      <div class="ad-msg">Registro guardado a las ${new Date(entry.created_on||Date.now()).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}.<br>
-      Sueño: ${entry.horas_sueno}h · Calidad: ${'★'.repeat(entry.calidad_sueno||0)}${'☆'.repeat(5-(entry.calidad_sueno||0))}</div>
+      <div class="ad-icon">${isToday ? '✅' : '📋'}</div>
+      <div class="ad-title">${isToday ? 'Registro de hoy completado' : 'Último registro: '+fechaStr}</div>
+      <div class="ad-msg">
+        ${!isToday ? '<div style="margin-bottom:8px;color:var(--amber);font-size:11px">⚠ Aún no has registrado hoy</div>' : ''}
+        🌙 Sueño: <strong>${entry.horas_sueno}h</strong> · Calidad: <strong>${entry.calidad_sueno}/5</strong><br>
+        💪 Sesión: <strong>${entry.sesion_completada ? 'Completada ✓' : 'No realizada'}</strong><br>
+        🎯 Hábitos: <strong>${habitos}</strong><br>
+        ⚡ Sensación: <strong>${entry.sensacion_general}/5</strong>
+        ${entry.notas ? `<br><span style="font-size:10px;color:var(--txt3);font-style:italic">${entry.notas}</span>` : ''}
+      </div>
     </div>
-    <div style="text-align:center;margin-top:12px">
-      <button onclick="renderForm()" style="background:none;border:none;color:var(--txt3);font-size:12px;cursor:pointer;text-decoration:underline">Modificar registro de hoy</button>
+    <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:8px">
+      ${!isToday ? `<button onclick="renderForm()" style="background:var(--gold);border:none;color:#0a0d14;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:13px 20px;border-radius:11px;cursor:pointer;width:100%">Registrar hoy →</button>` : ''}
+      <button onclick="renderForm()" style="background:none;border:1px solid var(--border2);color:var(--txt3);font-family:'DM Sans',sans-serif;font-size:11px;padding:8px 16px;border-radius:8px;cursor:pointer">
+        ${isToday ? 'Modificar registro de hoy' : 'Modificar registro anterior'}
+      </button>
     </div>`;
+}
 }
 
 function renderForm() {
