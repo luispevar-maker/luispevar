@@ -781,8 +781,9 @@ function renderDashboardData() {
   const now = new Date();
   const dayOfWeek = now.getDay()===0?6:now.getDay()-1;
   const monday = new Date(now); monday.setDate(now.getDate()-dayOfWeek); monday.setHours(0,0,0,0);
-  const weekDates = Array.from({length:7},(_,i)=>{const d=new Date(monday);d.setDate(monday.getDate()+i);return d.toISOString().split('T')[0];});
-  const weekRecords = S.daily.filter(r => r.fecha && weekDates.some(d => r.fecha.startsWith(d)));
+  const _ld = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const weekDates = Array.from({length:7},(_,i)=>{const d=new Date(monday);d.setDate(d.getDate()+i);return _ld(d);});
+  const weekRecords = S.daily.filter(r => r.fecha && weekDates.includes(r.fecha.substring(0,10)));
   const sessions = weekRecords.filter(r => r.sesion_completada).length;
   const sleepAvg = weekRecords.length ? (weekRecords.reduce((s,r)=>s+parseFloat(r.horas_sueno||0),0)/weekRecords.length).toFixed(1) : '—';
   const habitsArr = weekRecords.map(r => {
