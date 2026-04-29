@@ -27,21 +27,15 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 .nb.active{background:rgba(201,168,76,.13);border-color:rgba(201,168,76,.3);color:#E8C97A}
 .nav-right{font-family:'DM Mono',monospace;font-size:10px;color:#7A92AA}
 .container{max-width:480px;margin:0 auto;padding:16px 16px 40px}
-
-/* Sections */
 .section{background:rgba(12,21,37,.9);border:1px solid var(--border);border-radius:14px;padding:18px 16px;margin-bottom:14px}
 .section-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* Stars rating */
 .rating-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
 .rating-row:last-child{margin-bottom:0}
 .rating-label{font-size:13px;color:var(--txt2);flex:1}
 .stars{display:flex;gap:6px}
 .star{width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;-webkit-tap-highlight-color:transparent}
 .star.active{background:rgba(201,168,76,.2);border-color:var(--gold)}
-
-/* Number input */
 .num-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .num-row:last-child{margin-bottom:0}
 .num-label{font-size:13px;color:var(--txt2);flex:1}
@@ -49,8 +43,6 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 .num-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--txt);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:all .15s}
 .num-btn:hover{background:rgba(255,255,255,.07)}
 .num-val{width:52px;text-align:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--gold-l);padding:0 4px}
-
-/* Toggle checkbox */
 .habit-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .habit-row:last-child{border-bottom:none}
 .habit-check{width:24px;height:24px;border-radius:6px;border:1.5px solid var(--border2);background:var(--bg3);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;-webkit-tap-highlight-color:transparent}
@@ -58,12 +50,6 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 .habit-info{flex:1}
 .habit-name{font-size:13px;color:var(--txt);line-height:1.3}
 .habit-obj{font-size:11px;color:var(--txt3);margin-top:2px;line-height:1.3}
-.habit-cat{display:inline-block;font-size:9px;padding:1px 6px;border-radius:10px;font-weight:500;margin-bottom:2px}
-.cat-sleep{background:var(--purple-d);color:var(--purple)}
-.cat-food{background:var(--green-d);color:var(--green)}
-.cat-exercise{background:var(--blue-d);color:var(--blue)}
-
-/* Boolean toggle */
 .bool-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .bool-row:last-child{border-bottom:none}
 .bool-label{font-size:13px;color:var(--txt2);flex:1;padding-right:12px}
@@ -71,19 +57,13 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 .toggle.on{background:rgba(74,222,128,.2);border-color:var(--green)}
 .toggle-knob{width:20px;height:20px;border-radius:50%;background:var(--txt3);position:absolute;top:2px;left:2px;transition:all .2s}
 .toggle.on .toggle-knob{left:24px;background:var(--green)}
-
-/* Notes textarea */
 .notes-area{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:none;min-height:80px;line-height:1.5;transition:border-color .15s}
 .notes-area:focus{border-color:rgba(201,168,76,.3)}
 .notes-area::placeholder{color:var(--txt3)}
-
-/* Submit */
 .submit-btn{width:100%;padding:16px;background:var(--gold);border:none;border-radius:12px;color:#0a0d14;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.02em;margin-top:6px}
 .submit-btn:hover{background:var(--gold-l)}
 .submit-btn:active{transform:scale(.98)}
 .submit-btn:disabled{opacity:.5;cursor:not-allowed}
-
-/* States */
 .loading{text-align:center;padding:40px 20px;color:var(--txt3);font-size:13px}
 .loading-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -97,9 +77,11 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 .already-done .ad-title{font-size:14px;font-weight:500;color:var(--gold);margin-bottom:4px}
 .already-done .ad-msg{font-size:12px;color:var(--txt3)}
 .no-active{text-align:center;padding:20px;color:var(--txt3);font-size:12px}
-
-/* Cat separator */
 .cat-sep{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;margin-top:4px}
+/* Date picker */
+.date-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--txt);font-family:'DM Mono',monospace;font-size:14px;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer}
+.date-input:focus{border-color:rgba(201,168,76,.4)}
+.date-input::-webkit-calendar-picker-indicator{filter:invert(.5);cursor:pointer}
 </style>
 </head>
 <body>
@@ -132,136 +114,105 @@ body{background:linear-gradient(180deg,#010408 0%,#071526 40%,#060b14 100%)}
 </div>
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────────────────
-// IMPORTANTE: Sustituir por tu token de Baserow (solo lectura para vectores, lectura+escritura para registros)
-// Crear en Baserow → Ajustes → API tokens → Nuevo token
-const CONFIG = {
-  WORKER: 'https://luispevar-proxy.luispevar.workers.dev',
-};
-
-const CAT_LABELS = { sleep: {label:'Sueño', cls:'cat-sleep'}, food: {label:'Alimentación', cls:'cat-food'}, exercise: {label:'Entrenamiento', cls:'cat-exercise'} };
+const CONFIG = { WORKER: 'https://luispevar-proxy.luispevar.workers.dev' };
+const CAT_LABELS = { sleep:{label:'Sueño',cls:'cat-sleep'}, food:{label:'Alimentación',cls:'cat-food'}, exercise:{label:'Entrenamiento',cls:'cat-exercise'} };
 const CAT_ORDER = ['sleep','food','exercise'];
-const DAYS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
 let vectors = [];
 let checks = {};
-let formData = {
-  horas_sueno: 7.0,
-  calidad_sueno: 3,
-  sesion_completada: false,
-  sensacion_general: 3,
-  notas: ''
-};
+let formData = { horas_sueno:7.0, calidad_sueno:3, sesion_completada:false, sensacion_general:3, notas:'' };
 
-const today = new Date();
-today.setHours(0,0,0,0);
-const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-const weekNum = Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000+1)/7);
+// Fecha local — nunca toISOString() (offset UTC+2 España)
+const _today = new Date();
+const todayStr = _today.getFullYear()+'-'+String(_today.getMonth()+1).padStart(2,'0')+'-'+String(_today.getDate()).padStart(2,'0');
+const weekNum = Math.ceil(((_today - new Date(_today.getFullYear(),0,1))/86400000+1)/7);
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
+function dateToWeekNum(dateStr) {
+  const d = new Date(dateStr+'T12:00:00');
+  return Math.ceil(((d - new Date(d.getFullYear(),0,1))/86400000+1)/7);
+}
+
 async function init() {
   const planStart = new Date('2026-04-27T00:00:00');
-  const planDays = Math.max(1, Math.floor((today - planStart) / 86400000) + 1);
+  const planDays = Math.max(1, Math.floor((_today - planStart) / 86400000) + 1);
   const planSub = document.getElementById('planSub');
   if(planSub) planSub.textContent = 'Inicio del plan: 27 abr 2026 · Día ' + planDays + ' del plan';
   const navRight = document.getElementById('navRight');
-  const wn = Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000+1)/7);
-  if(navRight) navRight.textContent = 'Sem ' + wn + ' · ' + today.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
-
+  if(navRight) navRight.textContent = 'Sem ' + weekNum + ' · ' + _today.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
   const main = document.getElementById('mainContent');
   try {
     await loadVectors();
     await checkAlreadyDone();
   } catch(err) {
-    main.innerHTML = `<div class="error-msg">
-      ⚠ <strong>Error cargando los datos</strong><br><br>
-      ${err.message}<br><br>
-      <small>Comprueba que el token de Baserow es correcto y que las tablas tienen los permisos adecuados.</small>
-    </div>`;
+    main.innerHTML = `<div class="error-msg">⚠ <strong>Error cargando los datos</strong><br><br>${err.message}</div>`;
   }
 }
 
 async function fetchBaserow(resource, method='GET', body=null, params='') {
   const url = `${CONFIG.WORKER}/${resource}${params?'?'+params:''}`;
-  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  const opts = { method, headers: { 'Content-Type':'application/json' } };
   if(body) opts.body = JSON.stringify(body);
   const res = await fetch(url, opts);
-  if(!res.ok) {
-    const txt = await res.text();
-    throw new Error('Worker ' + res.status + ': ' + txt.substring(0,200));
-  }
-  return method === 'DELETE' ? null : res.json();
+  if(!res.ok) { const txt = await res.text(); throw new Error('Worker '+res.status+': '+txt.substring(0,200)); }
+  return method==='DELETE' ? null : res.json();
 }
 
 async function loadVectors() {
-  const data = await fetchBaserow('vectors', 'GET', null, 'size=100');
-  vectors = (data.results || []).filter(v => v.activo === true);
-  vectors.sort((a,b) => {
-    const catA = CAT_ORDER.indexOf(a.categoria); const catB = CAT_ORDER.indexOf(b.categoria);
-    return catA !== catB ? catA - catB : (Number(a.orden)||0) - (Number(b.orden)||0);
-  });
+  const data = await fetchBaserow('vectors','GET',null,'size=100');
+  vectors = (data.results||[]).filter(v=>v.activo===true);
+  vectors.sort((a,b)=>{const ca=CAT_ORDER.indexOf(a.categoria),cb=CAT_ORDER.indexOf(b.categoria);return ca!==cb?ca-cb:(Number(a.orden)||0)-(Number(b.orden)||0);});
 }
 
 async function checkAlreadyDone() {
-  const data = await fetchBaserow('daily', 'GET', null, 'size=30');
-  const all = (data.results || []).sort((a,b) => (b.fecha||'').localeCompare(a.fecha||''));
-  const todayRecord = all.find(r => r.fecha && r.fecha.startsWith(todayStr));
-  const lastRecord = all[0]; // most recent regardless of date
-  if(todayRecord) {
-    renderAlreadyDone(todayRecord, true);
-  } else if(lastRecord) {
-    renderAlreadyDone(lastRecord, false);
-  } else {
-    renderForm();
-  }
+  const data = await fetchBaserow('daily','GET',null,'size=30');
+  const all = (data.results||[]).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  const todayRecord = all.find(r=>r.fecha&&r.fecha.startsWith(todayStr));
+  const lastRecord = all[0];
+  if(todayRecord) renderAlreadyDone(todayRecord, true);
+  else if(lastRecord) renderAlreadyDone(lastRecord, false);
+  else renderForm();
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
 function renderAlreadyDone(entry, isToday) {
   const main = document.getElementById('mainContent');
   const fechaStr = entry.fecha ? new Date(entry.fecha+'T12:00').toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long'}) : '—';
-  const habitos = entry.habitos_json ? (() => { try { const h=JSON.parse(entry.habitos_json); const done=Object.values(h).filter(Boolean).length; const total=Object.values(h).length; return `${done}/${total} hábitos`; } catch{return '—';} })() : '—';
+  const habitos = entry.habitos_json ? (()=>{try{const h=JSON.parse(entry.habitos_json);const done=Object.values(h).filter(Boolean).length;const total=Object.values(h).length;return `${done}/${total} hábitos`;}catch{return '—';}})() : '—';
   main.innerHTML = `
     <div class="already-done">
-      <div class="ad-icon">${isToday ? '✅' : '📋'}</div>
-      <div class="ad-title">${isToday ? 'Registro de hoy completado' : 'Último registro: '+fechaStr}</div>
+      <div class="ad-icon">${isToday?'✅':'📋'}</div>
+      <div class="ad-title">${isToday?'Registro de hoy completado':'Último registro: '+fechaStr}</div>
       <div class="ad-msg">
-        ${!isToday ? '<div style="margin-bottom:8px;color:var(--amber);font-size:11px">⚠ Aún no has registrado hoy</div>' : ''}
+        ${!isToday?'<div style="margin-bottom:8px;color:var(--amber);font-size:11px">⚠ Aún no has registrado hoy</div>':''}
         🌙 Sueño: <strong>${entry.horas_sueno}h</strong> · Calidad: <strong>${entry.calidad_sueno}/5</strong><br>
-        💪 Sesión: <strong>${entry.sesion_completada ? 'Completada ✓' : 'No realizada'}</strong><br>
+        💪 Sesión: <strong>${entry.sesion_completada?'Completada ✓':'No realizada'}</strong><br>
         🎯 Hábitos: <strong>${habitos}</strong><br>
         ⚡ Sensación: <strong>${entry.sensacion_general}/5</strong>
-        ${entry.notas ? `<br><span style="font-size:10px;color:var(--txt3);font-style:italic">${entry.notas}</span>` : ''}
+        ${entry.notas?`<br><span style="font-size:10px;color:var(--txt3);font-style:italic">${entry.notas}</span>`:''}
       </div>
     </div>
     <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:8px">
-      ${!isToday ? `<button onclick="renderForm()" style="background:var(--gold);border:none;color:#0a0d14;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:13px 20px;border-radius:11px;cursor:pointer;width:100%">Registrar hoy →</button>` : ''}
+      ${!isToday?`<button onclick="renderForm()" style="background:var(--gold);border:none;color:#0a0d14;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:13px 20px;border-radius:11px;cursor:pointer;width:100%">Registrar hoy →</button>`:''}
       <button onclick="renderForm()" style="background:none;border:1px solid var(--border2);color:var(--txt3);font-family:'DM Sans',sans-serif;font-size:11px;padding:8px 16px;border-radius:8px;cursor:pointer">
-        ${isToday ? 'Modificar registro de hoy' : 'Modificar registro anterior'}
+        ${isToday?'Modificar registro de hoy':'Registrar otro día / modificar registro anterior'}
       </button>
     </div>`;
-}
 }
 
 function renderForm() {
   const main = document.getElementById('mainContent');
   if(!main) return;
 
-  // Group vectors by category
   const grouped = {};
-  CAT_ORDER.forEach(c => { grouped[c] = vectors.filter(v => v.categoria === c); });
+  CAT_ORDER.forEach(c=>{grouped[c]=vectors.filter(v=>v.categoria===c);});
 
-  // Habit rows HTML
   let habitsHtml = '';
   let hasAny = false;
-  CAT_ORDER.forEach(cat => {
+  CAT_ORDER.forEach(cat=>{
     const vecs = grouped[cat];
     if(!vecs.length) return;
     hasAny = true;
-    const cfg = CAT_LABELS[cat];
-    habitsHtml += `<div class="cat-sep">${cfg.label}</div>`;
-    vecs.forEach(v => {
+    habitsHtml += `<div class="cat-sep">${CAT_LABELS[cat].label}</div>`;
+    vecs.forEach(v=>{
       habitsHtml += `
         <div class="habit-row" onclick="toggleHabit('${v.vector_id}')">
           <div class="habit-check ${checks[v.vector_id]?'checked':''}" id="hc-${v.vector_id}">${checks[v.vector_id]?'✓':''}</div>
@@ -272,13 +223,17 @@ function renderForm() {
         </div>`;
     });
   });
-
-  if(!hasAny) {
-    habitsHtml = `<div class="no-active">No tienes vectores activos.<br>Actívalos en el dashboard → 🎯 Hábitos 1%</div>`;
-  }
+  if(!hasAny) habitsHtml = `<div class="no-active">No tienes vectores activos.<br>Actívalos en el dashboard → 🎯 Hábitos 1%</div>`;
 
   main.innerHTML = `
     <div id="errorBanner"></div>
+
+    <!-- Fecha del registro -->
+    <div class="section">
+      <div class="section-title">📅 Fecha del registro</div>
+      <input type="date" class="date-input" id="fechaInput" value="${todayStr}" max="${todayStr}">
+      <div style="margin-top:8px;font-size:10px;color:var(--txt3)">Por defecto: hoy. Cámbiala si estás registrando un día anterior.</div>
+    </div>
 
     <!-- Sueño -->
     <div class="section">
@@ -286,9 +241,9 @@ function renderForm() {
       <div class="num-row">
         <div class="num-label">Horas dormidas</div>
         <div class="num-control">
-          <button class="num-btn" onclick="adjNum('horas_sueno', -0.5, 3, 12)">−</button>
+          <button class="num-btn" onclick="adjNum('horas_sueno',-0.5,3,12)">−</button>
           <div class="num-val" id="val-horas">${formData.horas_sueno}h</div>
-          <button class="num-btn" onclick="adjNum('horas_sueno', 0.5, 3, 12)">+</button>
+          <button class="num-btn" onclick="adjNum('horas_sueno',0.5,3,12)">+</button>
         </div>
       </div>
       <div class="rating-row">
@@ -338,56 +293,48 @@ function renderForm() {
   `;
 }
 
-// ── CONTROLS ──────────────────────────────────────────────────────────────────
 function toggleHabit(id) {
   checks[id] = !checks[id];
-  const el = document.getElementById('hc-' + id);
-  if(el) { el.classList.toggle('checked', checks[id]); el.textContent = checks[id] ? '✓' : ''; }
+  const el = document.getElementById('hc-'+id);
+  if(el){el.classList.toggle('checked',checks[id]);el.textContent=checks[id]?'✓':'';}
 }
 
 function adjNum(field, delta, min, max) {
-  formData[field] = Math.min(max, Math.max(min, Math.round((formData[field] + delta) * 10) / 10));
-  // Mapa directo de campo → ID del elemento de display
-  const elId = field === 'horas_sueno' ? 'val-horas' : ('val-' + field);
+  formData[field] = Math.min(max,Math.max(min,Math.round((formData[field]+delta)*10)/10));
+  const elId = field==='horas_sueno'?'val-horas':('val-'+field);
   const el = document.getElementById(elId);
-  if(el) el.textContent = formData[field] + (field === 'horas_sueno' ? 'h' : '');
+  if(el) el.textContent = formData[field]+(field==='horas_sueno'?'h':'');
 }
 
 function setStars(field, containerId, val) {
   formData[field] = val;
   const container = document.getElementById(containerId);
   if(!container) return;
-  container.querySelectorAll('.star').forEach((s,i) => {
-    s.classList.toggle('active', i < val);
-    s.textContent = i < val ? '★' : '☆';
-  });
+  container.querySelectorAll('.star').forEach((s,i)=>{s.classList.toggle('active',i<val);s.textContent=i<val?'★':'☆';});
 }
 
 function toggleBool(field, togId) {
   formData[field] = !formData[field];
   const el = document.getElementById(togId);
-  if(el) el.classList.toggle('on', formData[field]);
+  if(el) el.classList.toggle('on',formData[field]);
 }
 
-function showError(msg) {
-  const el = document.getElementById('errorBanner') || document.getElementById('mainContent');
-  if(el) el.innerHTML = `<div class="error-msg">⚠ ${msg}</div>` + (el.innerHTML || '');
-}
-
-// ── SUBMIT ────────────────────────────────────────────────────────────────────
 async function submitForm() {
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = 'Guardando...';
-
   try {
-    // Build habits JSON
+    // Leer fecha seleccionada (puede ser diferente de hoy)
+    const fechaInput = document.getElementById('fechaInput');
+    const selectedDate = fechaInput ? fechaInput.value : todayStr;
+    const selectedWeek = dateToWeekNum(selectedDate);
+
     const habitsJson = {};
-    vectors.forEach(v => { habitsJson[v.vector_id] = checks[v.vector_id] || false; });
+    vectors.forEach(v=>{habitsJson[v.vector_id]=checks[v.vector_id]||false;});
 
     const payload = {
-      fecha: todayStr,
-      semana: 'S' + weekNum,
+      fecha: selectedDate,
+      semana: 'S'+selectedWeek,
       horas_sueno: formData.horas_sueno,
       calidad_sueno: formData.calidad_sueno,
       sesion_completada: formData.sesion_completada,
@@ -396,20 +343,20 @@ async function submitForm() {
       notas: formData.notas,
     };
 
-    await fetchBaserow('daily', 'POST', payload);
-
-    document.getElementById('mainContent').style.display = 'none';
-    document.getElementById('successScreen').style.display = 'block';
-    window.scrollTo(0, 0);
-
+    await fetchBaserow('daily','POST',payload);
+    document.getElementById('mainContent').style.display='none';
+    document.getElementById('successScreen').style.display='block';
+    const sc = document.getElementById('successScreen');
+    sc.querySelector('.success-msg').innerHTML = `Fecha: <strong>${new Date(selectedDate+'T12:00').toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long'})}</strong><br>Sueño: <strong>${formData.horas_sueno}h</strong> · Sesión: <strong>${formData.sesion_completada?'✓':'✗'}</strong><br><br><a href="index.html" style="color:var(--gold)">← Ver dashboard</a>`;
+    window.scrollTo(0,0);
   } catch(err) {
-    btn.disabled = false;
-    btn.textContent = 'Guardar registro →';
-    showError('Error al guardar: ' + err.message);
+    btn.disabled=false;
+    btn.textContent='Guardar registro →';
+    const eb = document.getElementById('errorBanner');
+    if(eb) eb.innerHTML=`<div class="error-msg">⚠ Error al guardar: ${err.message}</div>`;
   }
 }
 
-// ── START ─────────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
